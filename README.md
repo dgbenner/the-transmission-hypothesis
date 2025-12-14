@@ -562,4 +562,4 @@ Everything else builds from there.
 
 *This document is internal reference only. None of this explanatory framework appears on user-facing site. The experience should feel discovered, not designed.*
 
-*Last updated: 2024-12-13*
+*Last updated: 2025-12-13*
