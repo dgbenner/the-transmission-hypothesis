@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THE TRANSMISSION HYPOTHESIS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #000000;
+            color: #00FF00;
+            font-family: 'IBM Plex Mono', monospace;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* CRT scanline effect */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                to bottom,
+                rgba(0, 255, 0, 0.02) 50%,
+                rgba(0, 0, 0, 0.02) 50%
+            );
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        /* CRT flicker effect */
+        @keyframes flicker {
+            0% { opacity: 0.97; }
+            50% { opacity: 1; }
+            100% { opacity: 0.97; }
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 255, 0, 0.03);
+            pointer-events: none;
+            z-index: 999;
+            animation: flicker 0.15s infinite;
+        }
+
+        .header {
+            text-align: center;
+            padding: 1.5rem 1rem 1rem;
+            border-bottom: 2px solid #00FF00;
+            position: relative;
+            z-index: 10;
+        }
+
+        .protocol {
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: 0.3em;
+            margin-bottom: 0.5rem;
+        }
+
+        .status {
+            font-size: 0.875rem;
+            letter-spacing: 0.2em;
+            margin-bottom: 0.5rem;
+        }
+
+        .now-playing {
+            font-size: 1rem;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.75rem;
+        }
+
+        .meta {
+            font-size: 0.875rem;
+            letter-spacing: 0.15em;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+        }
+
+        .video-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        video {
+            max-width: 100%;
+            max-height: 100%;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border: 2px solid #00FF00;
+            filter: contrast(1.1) brightness(0.95);
+        }
+
+        /* Remove default video controls styling */
+        video::-webkit-media-controls {
+            display: none !important;
+        }
+
+        video::-webkit-media-controls-enclosure {
+            display: none !important;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .protocol {
+                font-size: 1.5rem;
+                letter-spacing: 0.2em;
+            }
+
+            .status {
+                font-size: 0.75rem;
+            }
+
+            .now-playing {
+                font-size: 0.875rem;
+            }
+
+            .meta {
+                font-size: 0.75rem;
+                gap: 1rem;
+            }
+
+            .header {
+                padding: 1rem 0.5rem 0.75rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .protocol {
+                font-size: 1.25rem;
+                letter-spacing: 0.15em;
+            }
+
+            .status {
+                font-size: 0.625rem;
+            }
+
+            .now-playing {
+                font-size: 0.75rem;
+            }
+
+            .meta {
+                font-size: 0.625rem;
+                flex-direction: column;
+                gap: 0.25rem;
+            }
+        }
+
+        /* Text glow effect */
+        .protocol,
+        .status,
+        .now-playing,
+        .meta {
+            text-shadow: 0 0 10px rgba(0, 255, 0, 0.8);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="protocol" id="protocol">◄ THETA-7 ►</div>
+        <div class="status">SIGNAL ACTIVE</div>
+        <div class="now-playing">NOW: <span id="title">Swedish Rhapsody (1952)</span></div>
+        <div class="meta">
+            <span id="timer">8M</span>
+            <span>12/20</span>
+        </div>
+    </div>
+
+    <div class="video-container">
+        <video id="videoPlayer" preload="auto">
+            <source src="" type="video/mp4">
+            Your terminal does not support video transmission.
+        </video>
+    </div>
+
+    <script>
+        // Protocol names for each transmission
+        const protocols = [
+            'THETA-7',
+            'SIGMA-3'
+        ];
+
+        // Transmission queue
+        const transmissions = [
+            {
+                title: 'Swedish Rhapsody (1952)',
+                url: 'https://archive.org/download/ird059/IRD-059.mp4',
+                protocol: 'THETA-7'
+            },
+            {
+                title: 'Begone Dull Care (1949)',
+                url: 'https://archive.org/download/1949normanmclarenevelynlambartbegonedullcare/1949%20Norman%20McLaren%20%26%20Evelyn%20Lambart%20Begone%20Dull%20Care.mp4',
+                protocol: 'SIGMA-3'
+            }
+        ];
+
+        let currentIndex = 0;
+        const video = document.getElementById('videoPlayer');
+        const titleElement = document.getElementById('title');
+        const protocolElement = document.getElementById('protocol');
+        const timerElement = document.getElementById('timer');
+
+        // Load transmission
+        function loadTransmission(index) {
+            const transmission = transmissions[index];
+            video.src = transmission.url;
+            titleElement.textContent = transmission.title;
+            protocolElement.textContent = `◄ ${transmission.protocol} ►`;
+            video.load();
+            video.play().catch(err => {
+                console.log('Autoplay prevented. User interaction required.');
+            });
+        }
+
+        // Format time remaining
+        function formatTimeRemaining(seconds) {
+            const minutes = Math.ceil(seconds / 60);
+            return `${minutes}M`;
+        }
+
+        // Update timer
+        function updateTimer() {
+            if (video.duration && !isNaN(video.duration)) {
+                const remaining = video.duration - video.currentTime;
+                timerElement.textContent = formatTimeRemaining(remaining);
+            }
+        }
+
+        // Video ended - advance to next
+        video.addEventListener('ended', () => {
+            currentIndex = (currentIndex + 1) % transmissions.length;
+            loadTransmission(currentIndex);
+        });
+
+        // Update timer every second
+        video.addEventListener('timeupdate', updateTimer);
+
+        // Handle metadata loaded
+        video.addEventListener('loadedmetadata', updateTimer);
+
+        // Initialize first transmission
+        loadTransmission(currentIndex);
+
+        // Handle user interaction for autoplay (mobile/browser restrictions)
+        document.addEventListener('click', () => {
+            if (video.paused) {
+                video.play().catch(err => console.log('Play failed:', err));
+            }
+        }, { once: true });
+    </script>
+</body>
+</html>
