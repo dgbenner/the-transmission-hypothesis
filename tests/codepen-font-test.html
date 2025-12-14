@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transmission Hypothesis - Font Tests</title>
+    
+    <!-- Import fonts from Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;700&family=VT323&family=Share+Tech+Mono&family=JetBrains+Mono&family=Orbitron:wght@400;700&family=Roboto+Mono&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #000;
+            color: #00FF00;
+            padding: 40px;
+            font-family: 'IBM Plex Mono', monospace;
+        }
+        
+        .font-test {
+            margin-bottom: 60px;
+            border: 1px solid #003300;
+            padding: 30px;
+        }
+        
+        .font-name {
+            color: #00FF41;
+            font-size: 14px;
+            margin-bottom: 20px;
+            letter-spacing: 0.1em;
+        }
+        
+        .protocol-name {
+            font-size: 32px;
+            margin-bottom: 15px;
+            letter-spacing: 0.1em;
+        }
+        
+        .status-line {
+            font-size: 18px;
+            margin-bottom: 10px;
+            letter-spacing: 0.05em;
+        }
+        
+        .time-remaining {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        
+        .transmission-title {
+            font-size: 14px;
+            margin-bottom: 20px;
+            opacity: 0.7;
+        }
+        
+        .sample-text {
+            font-size: 16px;
+            line-height: 1.5;
+            opacity: 0.8;
+        }
+        
+        /* Individual font styles */
+        .ibm-plex { font-family: 'IBM Plex Mono', monospace; }
+        .vt323 { font-family: 'VT323', monospace; }
+        .share-tech { font-family: 'Share Tech Mono', monospace; }
+        .jetbrains { font-family: 'JetBrains Mono', monospace; }
+        .orbitron { font-family: 'Orbitron', sans-serif; }
+        .roboto { font-family: 'Roboto Mono', monospace; }
+        
+        /* Color variations */
+        .white { color: #FFFFFF; }
+        .amber { color: #FFBF00; }
+        
+        hr {
+            border: none;
+            border-top: 1px solid #003300;
+            margin: 40px 0;
+        }
+        
+        .comparison {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-top: 40px;
+        }
+        
+        @media (max-width: 768px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- IBM Plex Mono -->
+    <div class="font-test ibm-plex">
+        <div class="font-name">IBM PLEX MONO</div>
+        <div class="protocol-name">◄ THETA-7 ►</div>
+        <div class="status-line">SIGNAL ACTIVE | 12/20</div>
+        <div class="time-remaining">8M</div>
+        <div class="transmission-title">NOW: Duck and Cover (1952)</div>
+        <div class="sample-text">
+            Protocol Theta-7 monitors control mechanisms through corporate training apparatus, 
+            state educational systems, and mental hygiene programming. Duration varies. 
+            Signal strength adequate. 0123456789
+        </div>
+    </div>
+
+    <!-- VT323 -->
+    <div class="font-test vt323">
+        <div class="font-name ibm-plex">VT323 (CRT TERMINAL)</div>
+        <div class="protocol-name">◄ THETA-7 ►</div>
+        <div class="status-line">SIGNAL ACTIVE | 12/20</div>
+        <div class="time-remaining">8M</div>
+        <div class="transmission-title">NOW: Duck and Cover (1952)</div>
+        <div class="sample-text">
+            Protocol Theta-7 monitors control mechanisms through corporate training apparatus, 
+            state educational systems, and mental hygiene programming. Duration varies. 
+            Signal strength adequate. 0123456789
+        </div>
+    </div>
+
+    <!-- Share Tech Mono -->
+    <div class="font-test share-tech">
+        <div class="font-name ibm-plex">SHARE TECH MONO</div>
+        <div class="protocol-name">◄ THETA-7 ►</div>
+        <div class="status-line">SIGNAL ACTIVE | 12/20</div>
+        <div class="time-remaining">8M</div>
+        <div class="transmission-title">NOW: Duck and Cover (1952)</div>
+        <div class="sample-text">
+            Protocol Theta-7 monitors control mechanisms through corporate training apparatus, 
+            state educational systems, and mental hygiene programming. Duration varies. 
+            Signal strength adequate. 0123456789
+        </div>
+    </div>
+
+    <!-- JetBrains Mono -->
+    <div class="font-test jetbrains">
+        <div class="font-name ibm-plex">JETBRAINS MONO</div>
+        <div class="protocol-name">◄ THETA-7 ►</div>
+        <div class="status-line">SIGNAL ACTIVE | 12/20</div>
+        <div class="time-remaining">8M</div>
+        <div class="transmission-title">NOW: Duck and Cover (1952)</div>
+        <div class="sample-text">
+            Protocol Theta-7 monitors control mechanisms through corporate training apparatus, 
+            state educational systems, and mental hygiene programming. Duration varies. 
+            Signal strength adequate. 0123456789
+        </div>
+    </div>
+
+    <!-- Orbitron (Eurostile-like) -->
+    <div class="font-test orbitron">
+        <div class="font-name ibm-plex">ORBITRON (EUROSTILE-LIKE)</div>
+        <div class="protocol-name">◄ THETA-7 ►</div>
+        <div class="status-line">SIGNAL ACTIVE | 12/20</div>
+        <div class="time-remaining">8M</div>
+        <div class="transmission-title">NOW: Duck and Cover (1952)</div>
+        <div class="sample-text ibm-plex">
+            Note: Orbitron is best for HEADERS ONLY. Body text shown in IBM Plex Mono. 
+            0123456789
+        </div>
+    </div>
+
+    <hr>
+
+    <!-- Color Variations -->
+    <div class="font-test ibm-plex white">
+        <div class="font-name">IBM PLEX MONO - WHITE TEXT</div>
+        <div class="protocol-name">◄ THETA-7 ►</div>
+        <div class="status-line">SIGNAL ACTIVE | 12/20</div>
+        <div class="time-remaining">8M</div>
+    </div>
+
+    <div class="font-test ibm-plex amber">
+        <div class="font-name">IBM PLEX MONO - AMBER CRT</div>
+        <div class="protocol-name">◄ THETA-7 ►</div>
+        <div class="status-line">SIGNAL ACTIVE | 12/20</div>
+        <div class="time-remaining">8M</div>
+    </div>
+
+    <hr>
+
+    <!-- Side-by-side comparison -->
+    <div class="comparison">
+        <div class="font-test ibm-plex">
+            <div class="font-name">OPTION 1: IBM PLEX MONO</div>
+            <div class="protocol-name">◄ THETA-7 ►</div>
+            <div class="time-remaining">8M | 12/20</div>
+        </div>
+        
+        <div class="font-test vt323">
+            <div class="font-name ibm-plex">OPTION 2: VT323</div>
+            <div class="protocol-name">◄ THETA-7 ►</div>
+            <div class="time-remaining">8M | 12/20</div>
+        </div>
+        
+        <div class="font-test">
+            <div class="font-name">OPTION 3: ORBITRON + PLEX</div>
+            <div class="protocol-name orbitron">◄ THETA-7 ►</div>
+            <div class="time-remaining ibm-plex">8M | 12/20</div>
+        </div>
+        
+        <div class="font-test share-tech">
+            <div class="font-name ibm-plex">OPTION 4: SHARE TECH MONO</div>
+            <div class="protocol-name">◄ THETA-7 ►</div>
+            <div class="time-remaining">8M | 12/20</div>
+        </div>
+    </div>
+
+</body>
+</html>
