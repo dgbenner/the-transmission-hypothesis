@@ -193,7 +193,7 @@
     </div>
 
     <div class="video-container">
-        <video id="videoPlayer" preload="auto">
+        <video id="videoPlayer" preload="auto" muted autoplay playsinline crossorigin="anonymous">
             <source src="" type="video/mp4">
             Your terminal does not support video transmission.
         </video>
@@ -233,9 +233,15 @@
             titleElement.textContent = transmission.title;
             protocolElement.textContent = `◄ ${transmission.protocol} ►`;
             video.load();
-            video.play().catch(err => {
-                console.log('Autoplay prevented. User interaction required.');
-            });
+
+            // Attempt to play
+            const playPromise = video.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(err => {
+                    console.error('Autoplay failed:', err);
+                    console.log('User interaction required to start playback');
+                });
+            }
         }
 
         // Format time remaining
@@ -264,13 +270,34 @@
         // Handle metadata loaded
         video.addEventListener('loadedmetadata', updateTimer);
 
+        // Error handling
+        video.addEventListener('error', (e) => {
+            console.error('Video error:', e);
+            console.error('Video error code:', video.error ? video.error.code : 'unknown');
+            console.error('Video error message:', video.error ? video.error.message : 'unknown');
+            console.error('Current source:', video.currentSrc);
+        });
+
+        video.addEventListener('loadstart', () => {
+            console.log('Video load started:', video.src);
+        });
+
+        video.addEventListener('canplay', () => {
+            console.log('Video can play');
+        });
+
+        video.addEventListener('playing', () => {
+            console.log('Video is playing');
+        });
+
         // Initialize first transmission
         loadTransmission(currentIndex);
 
         // Handle user interaction for autoplay (mobile/browser restrictions)
         document.addEventListener('click', () => {
             if (video.paused) {
-                video.play().catch(err => console.log('Play failed:', err));
+                console.log('User clicked - attempting to play');
+                video.play().catch(err => console.error('Play failed after click:', err));
             }
         }, { once: true });
     </script>
