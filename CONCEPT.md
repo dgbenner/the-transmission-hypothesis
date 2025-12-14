@@ -491,7 +491,6 @@ This is a running list of subjects, rabbit holes, and content areas that fit the
 
 **Methods of changing consciousness:**
 - Trepanation/trephination - skull drilling for enlightenment
-- Tramming (?) - clarify this reference
 - Sensory deprivation
 - Extreme fasting/asceticism
 - Sleep deprivation
@@ -605,7 +604,6 @@ This is a running list of subjects, rabbit holes, and content areas that fit the
 **Communities operating outside mainstream:**
 - Baltimore Twelve O'Clock Boys (dirt bikes)
 - Bronies (My Little Pony fandom)
-- Furries
 - Urban exploration
 - Train hopping / freight riders
 - Rave culture origins
@@ -787,4 +785,4 @@ Everything else builds from there.
 
 *This document is internal reference only. None of this explanatory framework appears on user-facing site. The experience should feel discovered, not designed.*
 
-*Last updated: 2024-12-13*
+*Last updated: 2025-12-13*
