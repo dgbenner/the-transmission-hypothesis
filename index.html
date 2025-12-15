@@ -111,12 +111,45 @@
             filter: contrast(1.1) brightness(0.95);
         }
 
-        /* Remove default video controls styling */
+        /* Remove ALL video controls */
         video::-webkit-media-controls {
             display: none !important;
+            -webkit-appearance: none !important;
         }
 
         video::-webkit-media-controls-enclosure {
+            display: none !important;
+        }
+
+        video::-webkit-media-controls-panel {
+            display: none !important;
+        }
+
+        video::-webkit-media-controls-play-button {
+            display: none !important;
+        }
+
+        video::-webkit-media-controls-timeline {
+            display: none !important;
+        }
+
+        video::-webkit-media-controls-current-time-display {
+            display: none !important;
+        }
+
+        video::-webkit-media-controls-time-remaining-display {
+            display: none !important;
+        }
+
+        video::-webkit-media-controls-mute-button {
+            display: none !important;
+        }
+
+        video::-webkit-media-controls-volume-slider {
+            display: none !important;
+        }
+
+        video::-webkit-media-controls-fullscreen-button {
             display: none !important;
         }
 
@@ -175,7 +208,7 @@
     </div>
 
     <div class="video-container">
-        <video id="videoPlayer" preload="auto" muted autoplay playsinline crossorigin="anonymous" controls>
+        <video id="videoPlayer" preload="auto" autoplay playsinline crossorigin="anonymous">
             Your terminal does not support video transmission.
         </video>
     </div>
