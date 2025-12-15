@@ -200,10 +200,10 @@
 <body>
     <div class="header">
         <div class="status">SIGNAL ACTIVE</div>
-        <div class="now-playing">NOW: <span id="transmission">THETA-7 - Deep Nuclear Drone</span></div>
+        <div class="now-playing">TX: <span id="transmission">THETA-7 DND-87-D</span></div>
         <div class="meta">
             <span id="timer">--</span>
-            <span>12/20</span>
+            <span>13/20</span>
         </div>
     </div>
 
@@ -214,83 +214,111 @@
     </div>
 
     <script>
+        // Generate obscured code from filename with persistent storage
+        function generateCode(filename) {
+            // Check if we already have a stored code for this filename
+            const storedCodes = JSON.parse(localStorage.getItem('transmissionCodes') || '{}');
+
+            if (storedCodes[filename]) {
+                return storedCodes[filename];
+            }
+
+            // Remove extension
+            const name = filename.replace(/\.(mp3|mp4|m4v)$/i, '');
+
+            // Split by spaces, hyphens, or underscores
+            const words = name.split(/[\s\-_]+/).filter(w => w.length > 0);
+
+            // Create acronym from first letters
+            const acronym = words.map(w => w.charAt(0).toUpperCase()).join('');
+
+            // Generate consistent random numbers based on filename
+            // Use simple hash function for consistency
+            let hash = 0;
+            for (let i = 0; i < filename.length; i++) {
+                hash = ((hash << 5) - hash) + filename.charCodeAt(i);
+                hash = hash & hash; // Convert to 32-bit integer
+            }
+
+            // Generate consistent 2-digit number (10-99)
+            const num1 = (Math.abs(hash % 90) + 10).toString();
+
+            // Generate consistent 2 alphanumeric characters
+            const chars = 'ABCDEFGHIJKLMNPQRSTUVWXYZ23456789'; // Removed O, 0, 1, I for clarity
+            const char1 = chars[Math.abs(hash % chars.length)];
+            const char2 = chars[Math.abs((hash >> 8) % chars.length)];
+
+            const code = `${acronym}-${num1}-${char1}${char2}`;
+
+            // Store the generated code
+            storedCodes[filename] = code;
+            localStorage.setItem('transmissionCodes', JSON.stringify(storedCodes));
+
+            return code;
+        }
+
         // Protocol names for each transmission
         const protocols = [
-            'THETA-7',
-            'SIGMA-3',
-            'ALPHA-9',
-            'DELTA-4',
-            'OMEGA-2',
-            'ZETA-6',
-            'KAPPA-1',
-            'BETA-5',
-            'GAMMA-8',
-            'EPSILON-2'
+            'THETA-7', 'SIGMA-3', 'ALPHA-9', 'DELTA-4', 'OMEGA-2', 'ZETA-6',
+            'KAPPA-1', 'BETA-5', 'GAMMA-8', 'EPSILON-2', 'PHI-4', 'RHO-6',
+            'PSI-9', 'LAMBDA-5', 'MU-8', 'NU-3', 'XI-7', 'OMICRON-4', 'PI-2',
+            'TAU-6', 'UPSILON-9', 'CHI-1', 'ETA-5', 'IOTA-3'
         ];
 
-        // Transmission queue
-        // Using Conet Project recordings - direct CDN URLs
-        const transmissions = [
-            {
-                title: 'Deep Nuclear Drone',
-                url: 'https://dn721601.ca.archive.org/0/items/The-Conet-Project/The%20Conet%20Project%20-%20Recordings%20of%20Shortwave%20Numbers%20Stations%20%281997%29%20%5B2013%20-%2015th%20Anniversary%20Bonus%20Disc%20Edition%5D%20%5BFLAC%5D/Disc%205/24%20-%20Deep%20Nuclear%20Drone.mp3',
-                protocol: 'THETA-7'
-            },
-            {
-                title: 'Phonetic Alphabet - NATO',
-                url: 'https://ia600205.us.archive.org/34/items/The-Conet-Project/The%20Conet%20Project%20-%20Recordings%20of%20Shortwave%20Numbers%20Stations%20%281997%29%20%5B2013%20-%2015th%20Anniversary%20Bonus%20Disc%20Edition%5D%20%5BFLAC%5D/Disc%201/04%20-%20Phonetic%20Alphabet%20-%20NATO.mp3',
-                protocol: 'SIGMA-3'
-            },
-            {
-                title: 'English Man + German Lady',
-                url: 'https://dn721601.ca.archive.org/0/items/The-Conet-Project/The%20Conet%20Project%20-%20Recordings%20of%20Shortwave%20Numbers%20Stations%20%281997%29%20%5B2013%20-%2015th%20Anniversary%20Bonus%20Disc%20Edition%5D%20%5BFLAC%5D/Disc%202/18%20-%20English%20Man%20%2B%20German%20Lady.mp3',
-                protocol: 'ALPHA-9'
-            },
-            {
-                title: 'Cherry Ripe',
-                url: 'https://dn721601.ca.archive.org/0/items/The-Conet-Project/The%20Conet%20Project%20-%20Recordings%20of%20Shortwave%20Numbers%20Stations%20%281997%29%20%5B2013%20-%2015th%20Anniversary%20Bonus%20Disc%20Edition%5D%20%5BFLAC%5D/Disc%202/30%20-%20Cherry%20Ripe.mp3',
-                protocol: 'DELTA-4'
-            },
-            {
-                title: 'English Man Version 3',
-                url: 'https://ia800205.us.archive.org/34/items/The-Conet-Project/The%20Conet%20Project%20-%20Recordings%20of%20Shortwave%20Numbers%20Stations%20%281997%29%20%5B2013%20-%2015th%20Anniversary%20Bonus%20Disc%20Edition%5D%20%5BFLAC%5D/Disc%203/06%20-%20English%20Man%20Version%203.mp3',
-                protocol: 'OMEGA-2'
-            },
-            {
-                title: '4 Figure Counting (10 Rough Tones)',
-                url: 'https://dn721601.ca.archive.org/0/items/The-Conet-Project/The%20Conet%20Project%20-%20Recordings%20of%20Shortwave%20Numbers%20Stations%20%281997%29%20%5B2013%20-%2015th%20Anniversary%20Bonus%20Disc%20Edition%5D%20%5BFLAC%5D/Disc%203/14%20-%204%20Figure%20Counting%20%2810%20Rough%20Tones%29.mp3',
-                protocol: 'ZETA-6'
-            },
-            {
-                title: 'Station Dispute',
-                url: 'media/video/station duspute 1979.mp4',
-                protocol: 'KAPPA-1'
-            },
-            {
-                title: 'Les Conflit de Etoile',
-                url: 'media/video/les conflit de etoile.mp4',
-                protocol: 'BETA-5'
-            },
-            {
-                title: 'The Day After',
-                url: 'media/video/the day after.m4v',
-                protocol: 'GAMMA-8'
-            },
-            {
-                title: 'This Is A Test',
-                url: 'media/video/this is a test.mp4',
-                protocol: 'EPSILON-2'
-            }
+        // Video files in /media/video/ - UPDATE THIS LIST when adding new files
+        const videoFiles = [
+            'anti drug public service message .mp4',
+            'Broadcast and The Focus Group Investigate Wit.mp4',
+            'cafe flesh pruto foridideio 1982 United Stat.mp4',
+            'german teletext adult mix.mp4',
+            'join us.mp4',
+            'Kenny Omega vs. Haruka 2011 Japan Stardom.mp4',
+            'les conflit de etoile.mp4',
+            'life is flashing before your eyes.mp4',
+            'Liquid Sky 1982 United States Slava Tsukerman.mp4',
+            'skin tight.mp4',
+            'sound check on mirror .mp4',
+            'station duspute 1979.mp4',
+            'test pattern the police.mp4',
+            'the day after.m4v',
+            'the wizard of gore.mp4',
+            'this is a test.mp4',
+            'throbbing gristle discipline kazar pavillion.mp4'
         ];
+
+        // Generate transmissions from video files
+        const transmissions = videoFiles.map((filename, index) => {
+            // Create title from filename
+            const title = filename
+                .replace(/\.(mp4|m4v)$/i, '')
+                .split(/[\s\-_]+/)
+                .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+                .join(' ');
+
+            const code = generateCode(filename);
+            console.log(`Generated code for "${filename}": ${code}`);
+
+            return {
+                title: title,
+                url: `media/video/${filename}`,
+                protocol: protocols[index % protocols.length],
+                code: code
+            };
+        });
+
+        console.log('Total transmissions:', transmissions.length);
+        console.log('Transmissions:', transmissions);
 
         let currentIndex = 0;
         const video = document.getElementById('videoPlayer');
         const transmissionElement = document.getElementById('transmission');
         const timerElement = document.getElementById('timer');
+        const counterElement = document.querySelector('.meta span:last-child');
 
         // Load transmission
         function loadTransmission(index) {
             const transmission = transmissions[index];
+            console.log(`Loading transmission ${index + 1}/${transmissions.length}:`, transmission);
 
             // Clear existing source
             video.pause();
@@ -314,8 +342,13 @@
 
             video.appendChild(source);
 
-            // Update UI - combine protocol and title
-            transmissionElement.textContent = `${transmission.protocol} - ${transmission.title}`;
+            // Update UI - combine protocol and code
+            transmissionElement.textContent = `${transmission.protocol} ${transmission.code}`;
+
+            // Update counter
+            counterElement.textContent = `${index + 1}/${transmissions.length}`;
+
+            console.log(`Display updated: ${transmission.protocol} ${transmission.code}`);
 
             // Load and play
             video.load();
@@ -356,24 +389,39 @@
         // Handle metadata loaded
         video.addEventListener('loadedmetadata', updateTimer);
 
-        // Error handling
+        // Error handling with detailed debugging
         video.addEventListener('error', (e) => {
-            console.error('Video error:', e);
+            console.error('=== VIDEO ERROR ===');
+            console.error('Error event:', e);
             console.error('Video error code:', video.error ? video.error.code : 'unknown');
             console.error('Video error message:', video.error ? video.error.message : 'unknown');
             console.error('Current source:', video.currentSrc);
+            console.error('Video src attribute:', video.src);
+            console.error('Network state:', video.networkState);
+            console.error('Ready state:', video.readyState);
+
+            // Also check source element errors
+            const sources = video.querySelectorAll('source');
+            sources.forEach((source, i) => {
+                console.error(`Source ${i} src:`, source.src);
+                console.error(`Source ${i} type:`, source.type);
+            });
         });
 
         video.addEventListener('loadstart', () => {
-            console.log('Video load started:', video.src);
+            console.log('✓ Video load started:', video.src || video.currentSrc);
         });
 
         video.addEventListener('canplay', () => {
-            console.log('Video can play');
+            console.log('✓ Video can play - ready to start');
         });
 
         video.addEventListener('playing', () => {
-            console.log('Video is playing');
+            console.log('✓ Video is NOW PLAYING');
+        });
+
+        video.addEventListener('loadeddata', () => {
+            console.log('✓ Video data loaded');
         });
 
         // Initialize first transmission
@@ -386,6 +434,30 @@
                 video.play().catch(err => console.error('Play failed after click:', err));
             }
         }, { once: true });
+
+        // Global keyboard shortcut - press 'N' to skip to next transmission
+        // Works at any time during playback
+        console.log('Setting up keyboard listener for N key');
+
+        window.addEventListener('keydown', (e) => {
+            console.log('Key pressed:', e.key, 'Code:', e.code);
+
+            // Check if 'N' key is pressed (case insensitive)
+            if (e.key === 'n' || e.key === 'N' || e.code === 'KeyN') {
+                e.preventDefault(); // Prevent any default behavior
+                e.stopPropagation(); // Stop event from bubbling
+
+                console.log('N key detected! Advancing to next transmission');
+                console.log('Current index before:', currentIndex);
+
+                currentIndex = (currentIndex + 1) % transmissions.length;
+
+                console.log('Current index after:', currentIndex);
+                loadTransmission(currentIndex);
+            }
+        }, true); // Use capture phase to ensure it fires first
+
+        console.log('Keyboard listener active');
     </script>
 </body>
 </html>
