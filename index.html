@@ -222,7 +222,10 @@
             'DELTA-4',
             'OMEGA-2',
             'ZETA-6',
-            'KAPPA-1'
+            'KAPPA-1',
+            'BETA-5',
+            'GAMMA-8',
+            'EPSILON-2'
         ];
 
         // Transmission queue
@@ -260,8 +263,23 @@
             },
             {
                 title: 'Station Dispute',
-                url: 'media/video/station-dispute.mp4',
+                url: 'media/video/station duspute 1979.mp4',
                 protocol: 'KAPPA-1'
+            },
+            {
+                title: 'Les Conflit de Etoile',
+                url: 'media/video/les conflit de etoile.mp4',
+                protocol: 'BETA-5'
+            },
+            {
+                title: 'The Day After',
+                url: 'media/video/the day after.m4v',
+                protocol: 'GAMMA-8'
+            },
+            {
+                title: 'This Is A Test',
+                url: 'media/video/this is a test.mp4',
+                protocol: 'EPSILON-2'
             }
         ];
 
@@ -289,6 +307,8 @@
             if (transmission.url.endsWith('.mp3')) {
                 source.type = 'audio/mpeg';
             } else if (transmission.url.endsWith('.mp4')) {
+                source.type = 'video/mp4';
+            } else if (transmission.url.endsWith('.m4v')) {
                 source.type = 'video/mp4';
             }
 
