@@ -286,8 +286,21 @@
             'throbbing gristle discipline kazar pavillion.mp4'
         ];
 
-        // Generate transmissions from video files
-        const transmissions = videoFiles.map((filename, index) => {
+        // Shuffle array function (Fisher-Yates shuffle)
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        // Shuffle video files for random playback order
+        const shuffledVideoFiles = shuffleArray(videoFiles);
+
+        // Generate transmissions from shuffled video files
+        const transmissions = shuffledVideoFiles.map((filename, index) => {
             // Create title from filename
             const title = filename
                 .replace(/\.(mp4|m4v)$/i, '')
@@ -307,7 +320,7 @@
         });
 
         console.log('Total transmissions:', transmissions.length);
-        console.log('Transmissions:', transmissions);
+        console.log('Transmissions (randomized):', transmissions);
 
         let currentIndex = 0;
         const video = document.getElementById('videoPlayer');
