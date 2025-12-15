@@ -110,7 +110,7 @@
             width: auto;
             height: auto;
             object-fit: contain;
-            border: 2px solid #00FF00;
+            border: none;
             filter: contrast(1.1) brightness(0.95);
         }
 
@@ -193,7 +193,29 @@
         }
 
         /* Text glow effect */
-        .status,
+        /* Slow pulsing glow for the status indicator */
+        @keyframes slow-glow {
+            0% {
+                text-shadow: 0 0 6px rgba(0,255,0,0.5), 0 0 20px rgba(0,255,0,0.05);
+                opacity: 0.9;
+                filter: brightness(0.9);
+            }
+            50% {
+                text-shadow: 0 0 18px rgba(0,255,0,1), 0 0 40px rgba(0,255,0,0.15);
+                opacity: 1;
+                filter: brightness(1.05);
+            }
+            100% {
+                text-shadow: 0 0 6px rgba(0,255,0,0.5), 0 0 20px rgba(0,255,0,0.05);
+                opacity: 0.9;
+                filter: brightness(0.9);
+            }
+        }
+
+        .status {
+            animation: slow-glow 12s ease-in-out infinite;
+        }
+
         .now-playing,
         .meta {
             text-shadow: 0 0 10px rgba(0, 255, 0, 0.8);
