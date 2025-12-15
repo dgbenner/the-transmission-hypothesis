@@ -203,7 +203,6 @@
         <div class="now-playing">TX: <span id="transmission">THETA-7 DND-87-D</span></div>
         <div class="meta">
             <span id="timer">--</span>
-            <span>13/20</span>
         </div>
     </div>
 
@@ -326,7 +325,6 @@
         const video = document.getElementById('videoPlayer');
         const transmissionElement = document.getElementById('transmission');
         const timerElement = document.getElementById('timer');
-        const counterElement = document.querySelector('.meta span:last-child');
 
         // Load transmission
         function loadTransmission(index) {
@@ -357,9 +355,6 @@
 
             // Update UI - combine protocol and code
             transmissionElement.textContent = `${transmission.protocol} ${transmission.code}`;
-
-            // Update counter
-            counterElement.textContent = `${index + 1}/${transmissions.length}`;
 
             console.log(`Display updated: ${transmission.protocol} ${transmission.code}`);
 
