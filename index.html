@@ -185,9 +185,9 @@
     <div class="header">
         <div class="protocol" id="protocol">◄ THETA-7 ►</div>
         <div class="status">SIGNAL ACTIVE</div>
-        <div class="now-playing">NOW: <span id="title">Swedish Rhapsody (1952)</span></div>
+        <div class="now-playing">NOW: <span id="title">Deep Nuclear Drone</span></div>
         <div class="meta">
-            <span id="timer">8M</span>
+            <span id="timer">--</span>
             <span>12/20</span>
         </div>
     </div>
@@ -202,21 +202,27 @@
         // Protocol names for each transmission
         const protocols = [
             'THETA-7',
-            'SIGMA-3'
+            'SIGMA-3',
+            'ALPHA-9'
         ];
 
         // Transmission queue
-        // Using direct CDN URLs to avoid Archive.org redirect issues
+        // Using Conet Project recordings - direct CDN URLs
         const transmissions = [
             {
-                title: 'Swedish Rhapsody (1952)',
-                url: 'https://ia601206.us.archive.org/8/items/ird059/IRD-059.mp4',
+                title: 'Deep Nuclear Drone',
+                url: 'https://dn721601.ca.archive.org/0/items/The-Conet-Project/The%20Conet%20Project%20-%20Recordings%20of%20Shortwave%20Numbers%20Stations%20%281997%29%20%5B2013%20-%2015th%20Anniversary%20Bonus%20Disc%20Edition%5D%20%5BFLAC%5D/Disc%205/24%20-%20Deep%20Nuclear%20Drone.mp3',
                 protocol: 'THETA-7'
             },
             {
-                title: 'E07 Russian Intelligence Services',
-                url: 'https://ia800501.us.archive.org/10/items/shortwave-numbers-stations/E07-English-Man-Russian-Intelligence-Services-12227khz-220915.mp3',
+                title: 'Phonetic Alphabet - NATO',
+                url: 'https://ia600205.us.archive.org/34/items/The-Conet-Project/The%20Conet%20Project%20-%20Recordings%20of%20Shortwave%20Numbers%20Stations%20%281997%29%20%5B2013%20-%2015th%20Anniversary%20Bonus%20Disc%20Edition%5D%20%5BFLAC%5D/Disc%201/04%20-%20Phonetic%20Alphabet%20-%20NATO.mp3',
                 protocol: 'SIGMA-3'
+            },
+            {
+                title: 'English Man + German Lady',
+                url: 'https://dn721601.ca.archive.org/0/items/The-Conet-Project/The%20Conet%20Project%20-%20Recordings%20of%20Shortwave%20Numbers%20Stations%20%281997%29%20%5B2013%20-%2015th%20Anniversary%20Bonus%20Disc%20Edition%5D%20%5BFLAC%5D/Disc%202/18%20-%20English%20Man%20%2B%20German%20Lady.mp3',
+                protocol: 'ALPHA-9'
             }
         ];
 
