@@ -193,8 +193,7 @@
     </div>
 
     <div class="video-container">
-        <video id="videoPlayer" preload="auto" muted autoplay playsinline crossorigin="anonymous">
-            <source src="" type="video/mp4">
+        <video id="videoPlayer" preload="auto" muted autoplay playsinline crossorigin="anonymous" controls>
             Your terminal does not support video transmission.
         </video>
     </div>
@@ -215,8 +214,8 @@
                 protocol: 'THETA-7'
             },
             {
-                title: 'Begone Dull Care (1949)',
-                url: 'https://ia800308.us.archive.org/29/items/1949normanmclarenevelynlambartbegonedullcare/1949%20Norman%20McLaren%20%26%20Evelyn%20Lambart%20Begone%20Dull%20Care.mp4',
+                title: 'E07 Russian Intelligence Services',
+                url: 'https://ia800501.us.archive.org/10/items/shortwave-numbers-stations/E07-English-Man-Russian-Intelligence-Services-12227khz-220915.mp3',
                 protocol: 'SIGMA-3'
             }
         ];
@@ -230,9 +229,32 @@
         // Load transmission
         function loadTransmission(index) {
             const transmission = transmissions[index];
-            video.src = transmission.url;
+
+            // Clear existing source
+            video.pause();
+            video.removeAttribute('src');
+            while (video.firstChild) {
+                video.removeChild(video.firstChild);
+            }
+
+            // Add new source
+            const source = document.createElement('source');
+            source.src = transmission.url;
+
+            // Detect file type
+            if (transmission.url.endsWith('.mp3')) {
+                source.type = 'audio/mpeg';
+            } else if (transmission.url.endsWith('.mp4')) {
+                source.type = 'video/mp4';
+            }
+
+            video.appendChild(source);
+
+            // Update UI
             titleElement.textContent = transmission.title;
             protocolElement.textContent = `◄ ${transmission.protocol} ►`;
+
+            // Load and play
             video.load();
 
             // Attempt to play
