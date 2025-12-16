@@ -223,9 +223,57 @@
         .meta {
             text-shadow: 0 0 10px rgba(0, 255, 0, 0.8);
         }
+
+        /* Connection overlay */
+        #connectionOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000000;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: opacity 0.8s ease-out;
+        }
+
+        #connectionOverlay.fade-out {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #connectionMessage {
+            font-size: 1.5rem;
+            letter-spacing: 0.3em;
+            text-align: center;
+            text-shadow: 0 0 20px rgba(0, 255, 0, 1);
+            animation: slow-glow 4s ease-in-out infinite;
+        }
+
+        @media (max-width: 768px) {
+            #connectionMessage {
+                font-size: 1.1rem;
+                letter-spacing: 0.2em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            #connectionMessage {
+                font-size: 0.9rem;
+                letter-spacing: 0.15em;
+            }
+        }
     </style>
 </head>
 <body>
+    <!-- Connection overlay -->
+    <div id="connectionOverlay">
+        <div id="connectionMessage">CLICK TO RECEIVE SIGNAL</div>
+    </div>
+
     <div class="header">
         <div class="status">
             <span>SIGNAL: ACTIVE</span>
@@ -426,6 +474,35 @@
         const transmissionElement = document.getElementById('transmission');
         const timerElement = document.getElementById('timer');
         const frequencyElement = document.getElementById('frequency');
+        const connectionOverlay = document.getElementById('connectionOverlay');
+        const connectionMessage = document.getElementById('connectionMessage');
+
+        // Handle connection overlay
+        let connectionEstablished = false;
+
+        connectionOverlay.addEventListener('click', () => {
+            if (!connectionEstablished) {
+                connectionEstablished = true;
+
+                // Change message to "SIGNAL RECEIVED"
+                connectionMessage.textContent = 'SIGNAL RECEIVED';
+
+                // After 1.5 seconds, fade out overlay and start video
+                setTimeout(() => {
+                    connectionOverlay.classList.add('fade-out');
+
+                    // Start video playback
+                    video.play().catch(err => {
+                        console.error('Play failed after connection:', err);
+                    });
+
+                    // Remove overlay from DOM after fade completes
+                    setTimeout(() => {
+                        connectionOverlay.remove();
+                    }, 800); // Match the CSS transition duration
+                }, 1500);
+            }
+        });
 
         // Frequency drift system
         const BASE_FREQUENCY = 540.7;
@@ -515,15 +592,13 @@
 
             console.log(`Display updated: ${transmission.protocol} ${transmission.code}`);
 
-            // Load and play
+            // Load video
             video.load();
 
-            // Attempt to play
-            const playPromise = video.play();
-            if (playPromise !== undefined) {
-                playPromise.catch(err => {
-                    console.error('Autoplay failed:', err);
-                    console.log('User interaction required to start playback');
+            // Only autoplay if connection has been established
+            if (connectionEstablished) {
+                video.play().catch(err => {
+                    console.error('Play failed:', err);
                 });
             }
         }
@@ -589,13 +664,6 @@
             console.log('✓ Video data loaded');
         });
 
-        // Handle user interaction for autoplay (mobile/browser restrictions)
-        document.addEventListener('click', () => {
-            if (video.paused) {
-                console.log('User clicked - attempting to play');
-                video.play().catch(err => console.error('Play failed after click:', err));
-            }
-        }, { once: true });
 
         // Global keyboard shortcut - press 'N' to skip to next transmission
         // Works at any time during playback
