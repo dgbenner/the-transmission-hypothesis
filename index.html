@@ -75,6 +75,9 @@
             font-size: 0.875rem;
             letter-spacing: 0.2em;
             margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
         }
 
         .now-playing {
@@ -85,7 +88,7 @@
         }
 
         .meta {
-            font-size: 0.875rem;
+            font-size: 0.675rem;
             letter-spacing: 0.15em;
             display: flex;
             justify-content: center;
@@ -224,7 +227,10 @@
 </head>
 <body>
     <div class="header">
-        <div class="status">SIGNAL ACTIVE</div>
+        <div class="status">
+            <span>SIGNAL: ACTIVE</span>
+            <span>FREQUENCY: <span id="frequency">540.7 MHz</span></span>
+        </div>
         <div class="now-playing">TX: <span id="transmission">THETA-7 DND-87-D</span></div>
         <div class="meta">
             <span id="timer">--</span>
@@ -419,6 +425,63 @@
         const video = document.getElementById('videoPlayer');
         const transmissionElement = document.getElementById('transmission');
         const timerElement = document.getElementById('timer');
+        const frequencyElement = document.getElementById('frequency');
+
+        // Frequency drift system
+        const BASE_FREQUENCY = 540.7;
+        let currentFrequency = BASE_FREQUENCY;
+        let targetFrequency = BASE_FREQUENCY;
+        let driftState = 'stable'; // 'stable', 'small-drift', 'spike'
+        let driftEndTime = 0;
+
+        function updateFrequency() {
+            const now = Date.now();
+
+            // Check if current drift/spike has ended
+            if (driftState !== 'stable' && now >= driftEndTime) {
+                // Return to base frequency
+                driftState = 'stable';
+                targetFrequency = BASE_FREQUENCY;
+            }
+
+            // When stable, randomly trigger drifts or spikes
+            if (driftState === 'stable') {
+                const rand = Math.random();
+
+                // 2-3 large spikes per minute = ~3-4% chance per second
+                if (rand < 0.035) {
+                    driftState = 'spike';
+                    // Randomly choose drop or spike
+                    targetFrequency = Math.random() < 0.5 ? 538.2 : 541.9;
+                    // Duration: 0.5-1.5 seconds
+                    driftEndTime = now + (500 + Math.random() * 1000);
+                }
+                // 4-6 small drifts per minute = ~8-10% chance per second
+                else if (rand < 0.10) {
+                    driftState = 'small-drift';
+                    // Drift between 540.5 - 540.9
+                    targetFrequency = 540.5 + Math.random() * 0.4;
+                    // Duration: 4-10 seconds
+                    driftEndTime = now + (4000 + Math.random() * 6000);
+                }
+            }
+
+            // Smoothly interpolate current frequency toward target
+            const drift = targetFrequency - currentFrequency;
+            if (Math.abs(drift) > 0.01) {
+                // Spikes are faster, drifts are slower
+                const speed = driftState === 'spike' ? 0.3 : 0.05;
+                currentFrequency += drift * speed;
+            } else {
+                currentFrequency = targetFrequency;
+            }
+
+            // Update display
+            frequencyElement.textContent = `${currentFrequency.toFixed(1)} MHz`;
+        }
+
+        // Update frequency every 100ms for smooth animation
+        setInterval(updateFrequency, 100);
 
         // Load transmission
         function loadTransmission(index) {
