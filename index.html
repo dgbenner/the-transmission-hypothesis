@@ -269,7 +269,7 @@
 
         /* Glitch transition overlay */
         #glitchOverlay {
-            position: fixed;
+            position: absolute;
             top: 0;
             left: 0;
             width: 100%;
@@ -354,9 +354,6 @@
         <div id="connectionMessage">CLICK TO RECEIVE SIGNAL</div>
     </div>
 
-    <!-- Glitch transition overlay -->
-    <div id="glitchOverlay"></div>
-
     <div class="header">
         <div class="status">
             <span>SIGNAL: ACTIVE</span>
@@ -369,7 +366,10 @@
     </div>
 
     <div class="video-container">
-        <video id="videoPlayer" preload="auto" autoplay playsinline crossorigin="anonymous">
+        <!-- Glitch transition overlay -->
+        <div id="glitchOverlay"></div>
+
+        <video id="videoPlayer" preload="auto" playsinline crossorigin="anonymous">
             Your terminal does not support video transmission.
         </video>
     </div>
@@ -520,8 +520,8 @@
                 console.log(`Local: ${localTransmissions.length}, External: ${externalTransmissions.length}`);
                 console.log('Transmissions (randomized):', transmissions);
 
-                // Initialize first transmission
-                loadTransmission(currentIndex);
+                // Don't load transmission until user connects
+                console.log('Transmissions ready, waiting for user connection...');
             })
             .catch(error => {
                 console.error('Error loading external links, using local only:', error);
@@ -548,8 +548,8 @@
 
                 console.log('Total transmissions (local only):', transmissions.length);
 
-                // Initialize first transmission
-                loadTransmission(currentIndex);
+                // Don't load transmission until user connects
+                console.log('Transmissions ready, waiting for user connection...');
             });
 
         let currentIndex = 0;
@@ -666,6 +666,9 @@
 
                 // Change message to "SIGNAL RECEIVED"
                 connectionMessage.textContent = 'SIGNAL RECEIVED';
+
+                // Load first transmission
+                loadTransmission(currentIndex);
 
                 // After 1.5 seconds, fade out overlay and start video
                 setTimeout(() => {
