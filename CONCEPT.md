@@ -1,5 +1,3 @@
-# CONCEPT.md Updates to Add
-
 ## VISUAL IDENTITY & TYPOGRAPHY
 
 ### Font System
