@@ -495,6 +495,11 @@
             'winnebagoman.mp4'
         ];
 
+        // KLING-generated video files in /media/video-kling/ - UPDATE THIS LIST when adding new KLING videos
+        const klingVideoFiles = [
+            // Add your KLING-generated videos here (prefixed with kl-)
+        ];
+
         // Shuffle array function (Fisher-Yates shuffle)
         function shuffleArray(array) {
             const shuffled = [...array];
@@ -533,6 +538,26 @@
                     };
                 });
 
+                // Generate transmissions from KLING video files
+                const klingTransmissions = klingVideoFiles.map((filename, index) => {
+                    // Create title from filename
+                    const title = filename
+                        .replace(/\.(mp4|m4v)$/i, '')
+                        .split(/[\s\-_]+/)
+                        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+                        .join(' ');
+
+                    const code = generateCode(filename);
+
+                    return {
+                        title: title,
+                        url: `media/video-kling/${filename}`,
+                        protocol: protocols[(videoFiles.length + index) % protocols.length],
+                        code: code,
+                        source: 'kling'
+                    };
+                });
+
                 // Generate transmissions from external links
                 const externalTransmissions = externalLinks.map((link, index) => {
                     const code = generateCode(link.title);
@@ -540,18 +565,18 @@
                     return {
                         title: link.title,
                         url: link.url,
-                        protocol: protocols[(videoFiles.length + index) % protocols.length],
+                        protocol: protocols[(videoFiles.length + klingVideoFiles.length + index) % protocols.length],
                         code: code,
                         source: 'external'
                     };
                 });
 
                 // Combine and shuffle all transmissions
-                const allTransmissions = [...localTransmissions, ...externalTransmissions];
+                const allTransmissions = [...localTransmissions, ...klingTransmissions, ...externalTransmissions];
                 transmissions = shuffleArray(allTransmissions);
 
                 console.log('Total transmissions:', transmissions.length);
-                console.log(`Local: ${localTransmissions.length}, External: ${externalTransmissions.length}`);
+                console.log(`Local: ${localTransmissions.length}, KLING: ${klingTransmissions.length}, External: ${externalTransmissions.length}`);
                 console.log('Transmissions (randomized):', transmissions);
 
                 // Don't load transmission until user connects
@@ -560,9 +585,8 @@
             .catch(error => {
                 console.error('Error loading external links, using local only:', error);
 
-                // Fallback to local only if links.json fails to load
-                const shuffledVideoFiles = shuffleArray(videoFiles);
-                transmissions = shuffledVideoFiles.map((filename, index) => {
+                // Fallback to local + KLING only if links.json fails to load
+                const localTransmissions = videoFiles.map((filename, index) => {
                     const title = filename
                         .replace(/\.(mp4|m4v)$/i, '')
                         .split(/[\s\-_]+/)
@@ -580,7 +604,28 @@
                     };
                 });
 
-                console.log('Total transmissions (local only):', transmissions.length);
+                const klingTransmissions = klingVideoFiles.map((filename, index) => {
+                    const title = filename
+                        .replace(/\.(mp4|m4v)$/i, '')
+                        .split(/[\s\-_]+/)
+                        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+                        .join(' ');
+
+                    const code = generateCode(filename);
+
+                    return {
+                        title: title,
+                        url: `media/video-kling/${filename}`,
+                        protocol: protocols[(videoFiles.length + index) % protocols.length],
+                        code: code,
+                        source: 'kling'
+                    };
+                });
+
+                const allTransmissions = [...localTransmissions, ...klingTransmissions];
+                transmissions = shuffleArray(allTransmissions);
+
+                console.log('Total transmissions (local + KLING):', transmissions.length);
 
                 // Don't load transmission until user connects
                 console.log('Transmissions ready, waiting for user connection...');
