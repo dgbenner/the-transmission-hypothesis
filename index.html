@@ -571,6 +571,88 @@
                 scheduledEvents = [];
             });
 
+        // Event scheduling system
+        // Event windows: 00:00 GMT, 08:00 GMT, 16:00 GMT
+        const EVENT_SLOTS = [
+            { hour: 0, name: 'slot-1-midnight' },
+            { hour: 8, name: 'slot-2-morning' },
+            { hour: 16, name: 'slot-3-afternoon' }
+        ];
+
+        // Determine current event window (if any)
+        function getCurrentEventSlot() {
+            const now = new Date();
+            const gmtHour = now.getUTCHours();
+
+            console.log('=== EVENT SCHEDULING CHECK ===');
+            console.log('Current GMT time:', now.toUTCString());
+            console.log('Current GMT hour:', gmtHour);
+
+            // Find which event slot we're in (if any)
+            for (let i = 0; i < EVENT_SLOTS.length; i++) {
+                const slot = EVENT_SLOTS[i];
+                if (gmtHour === slot.hour) {
+                    console.log(`✓ IN EVENT WINDOW: ${slot.name} (${slot.hour}:00 GMT)`);
+                    return { slotIndex: i, slot: slot };
+                }
+            }
+
+            console.log('✗ Not in event window, using regular rotation');
+            return null;
+        }
+
+        // Select random event for current slot
+        function selectEventForSlot(slotIndex) {
+            if (!scheduledEvents || scheduledEvents.length === 0) {
+                console.log('No events available');
+                return null;
+            }
+
+            // Seed random selection based on slot and date to ensure same event for whole hour
+            const now = new Date();
+            const dateString = `${now.getUTCFullYear()}-${now.getUTCMonth()}-${now.getUTCDate()}`;
+            const seedString = `${dateString}-slot-${slotIndex}`;
+
+            // Simple hash function for consistent randomness
+            let hash = 0;
+            for (let i = 0; i < seedString.length; i++) {
+                hash = ((hash << 5) - hash) + seedString.charCodeAt(i);
+                hash = hash & hash;
+            }
+
+            const eventIndex = Math.abs(hash) % scheduledEvents.length;
+            const selectedEvent = scheduledEvents[eventIndex];
+
+            console.log('Event selection seed:', seedString);
+            console.log('Selected event index:', eventIndex);
+            console.log('Selected event:', selectedEvent);
+
+            return selectedEvent;
+        }
+
+        // Check if we should load an event instead of regular rotation
+        let currentEvent = null;
+        let isEventActive = false;
+
+        function checkForEvent() {
+            const eventSlot = getCurrentEventSlot();
+
+            if (eventSlot) {
+                const event = selectEventForSlot(eventSlot.slotIndex);
+                if (event) {
+                    currentEvent = event;
+                    isEventActive = true;
+                    console.log('✓ EVENT MODE ACTIVE');
+                    return true;
+                }
+            }
+
+            isEventActive = false;
+            currentEvent = null;
+            console.log('✓ REGULAR ROTATION MODE');
+            return false;
+        }
+
         // Load external links and combine with local files
         let transmissions = [];
 
@@ -885,8 +967,30 @@
 
         // Load transmission
         function loadTransmission(index) {
-            const transmission = transmissions[index];
-            console.log(`Loading transmission ${index + 1}/${transmissions.length}:`, transmission);
+            // Check if we should load an event instead
+            checkForEvent();
+
+            let transmission;
+            let isEvent = false;
+
+            if (isEventActive && currentEvent) {
+                // Load event video
+                console.log('=== LOADING EVENT ===');
+                console.log('Event:', currentEvent);
+
+                transmission = {
+                    title: currentEvent.title,
+                    url: currentEvent.url,
+                    protocol: 'EVENT',
+                    code: currentEvent.category ? currentEvent.category.toUpperCase() : 'SPECIAL',
+                    source: 'event'
+                };
+                isEvent = true;
+            } else {
+                // Load regular rotation video
+                transmission = transmissions[index];
+                console.log(`Loading transmission ${index + 1}/${transmissions.length}:`, transmission);
+            }
 
             // Clear existing source
             video.pause();
@@ -944,7 +1048,14 @@
         video.addEventListener('ended', () => {
             // Show glitch effect
             showGlitchTransition(() => {
-                // After glitch, load next transmission
+                // Check if we just finished an event
+                if (isEventActive) {
+                    console.log('Event finished, returning to regular rotation');
+                    isEventActive = false;
+                    currentEvent = null;
+                }
+
+                // After glitch, load next transmission (will check for events again)
                 currentIndex = (currentIndex + 1) % transmissions.length;
                 loadTransmission(currentIndex);
             });
