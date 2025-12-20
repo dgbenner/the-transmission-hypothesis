@@ -1,12 +1,17 @@
 [
   {
-    "title": "THE CURE: SONGS FROM THE LOST WORLD",
-    "url": "https://archive.org/download/sample-cure-video.mp4",
-    "category": "music"
+    "title": "GERMAN TELETEXT TRANSMISSION",
+    "url": "./media/video/german teletext adult mix.mp4",
+    "category": "experimental"
   },
   {
-    "title": "KOYAANISQATSI",
-    "url": "https://archive.org/download/sample-koyaanisqatsi.mp4",
-    "category": "experimental"
+    "title": "STATION DISPUTE INCIDENT 1979",
+    "url": "./media/video/station duspute 1979.mp4",
+    "category": "documentary"
+  },
+  {
+    "title": "TEST PATTERN PROTOCOL",
+    "url": "./media/video/test pattern the police.mp4",
+    "category": "shorts"
   }
 ]
