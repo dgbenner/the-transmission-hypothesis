@@ -965,6 +965,34 @@
         // Update frequency every 100ms for smooth animation
         setInterval(updateFrequency, 100);
 
+        // Manual event trigger - select random event from pool
+        function triggerManualEvent() {
+            if (!scheduledEvents || scheduledEvents.length === 0) {
+                console.log('No events available for manual trigger');
+                return null;
+            }
+
+            // Find events that are NOT the current event
+            let availableEvents = scheduledEvents;
+            if (currentEvent) {
+                availableEvents = scheduledEvents.filter(e => e !== currentEvent);
+            }
+
+            // If we filtered down to nothing, use the full list
+            if (availableEvents.length === 0) {
+                availableEvents = scheduledEvents;
+            }
+
+            // Pick random event
+            const randomIndex = Math.floor(Math.random() * availableEvents.length);
+            const selectedEvent = availableEvents[randomIndex];
+
+            console.log('Manual event selection - available events:', availableEvents.length);
+            console.log('Selected event:', selectedEvent);
+
+            return selectedEvent;
+        }
+
         // Load transmission
         function loadTransmission(index) {
             // Check if we should load an event instead
@@ -1103,20 +1131,28 @@
         });
 
 
-        // Global keyboard shortcut - press 'N' to skip to next transmission
-        // Works at any time during playback
-        console.log('Setting up keyboard listener for N key');
+        // Global keyboard shortcuts
+        // N = skip to next regular video (or exit event mode)
+        // M = trigger/skip events (manual control)
+        console.log('Setting up keyboard listeners for N and M keys');
 
         window.addEventListener('keydown', (e) => {
             console.log('Key pressed:', e.key, 'Code:', e.code);
 
             // Check if 'N' key is pressed (case insensitive)
             if (e.key === 'n' || e.key === 'N' || e.code === 'KeyN') {
-                e.preventDefault(); // Prevent any default behavior
-                e.stopPropagation(); // Stop event from bubbling
+                e.preventDefault();
+                e.stopPropagation();
 
                 console.log('N key detected! Advancing to next transmission');
                 console.log('Current index before:', currentIndex);
+
+                // If in event mode, exit it
+                if (isEventActive) {
+                    console.log('Exiting event mode, returning to regular rotation');
+                    isEventActive = false;
+                    currentEvent = null;
+                }
 
                 // Show glitch transition before switching
                 showGlitchTransition(() => {
@@ -1125,9 +1161,77 @@
                     loadTransmission(currentIndex);
                 });
             }
+
+            // Check if 'M' key is pressed (case insensitive)
+            if (e.key === 'm' || e.key === 'M' || e.code === 'KeyM') {
+                e.preventDefault();
+                e.stopPropagation();
+
+                console.log('M key detected! Manual event control');
+
+                const event = triggerManualEvent();
+
+                if (event) {
+                    if (isEventActive) {
+                        console.log(`Skipping to next event: ${event.title}`);
+                    } else {
+                        console.log(`Manual event trigger - playing: ${event.title}`);
+                    }
+
+                    // Set event mode and load the event
+                    currentEvent = event;
+                    isEventActive = true;
+
+                    showGlitchTransition(() => {
+                        // Create event transmission object
+                        const transmission = {
+                            title: event.title,
+                            url: event.url,
+                            protocol: 'EVENT',
+                            code: event.category ? event.category.toUpperCase() : 'SPECIAL',
+                            source: 'event'
+                        };
+
+                        // Clear existing source
+                        video.pause();
+                        video.removeAttribute('src');
+                        while (video.firstChild) {
+                            video.removeChild(video.firstChild);
+                        }
+
+                        // Add new source
+                        const source = document.createElement('source');
+                        source.src = transmission.url;
+
+                        if (transmission.url.endsWith('.mp3')) {
+                            source.type = 'audio/mpeg';
+                        } else if (transmission.url.endsWith('.mp4')) {
+                            source.type = 'video/mp4';
+                        } else if (transmission.url.endsWith('.m4v')) {
+                            source.type = 'video/mp4';
+                        }
+
+                        video.appendChild(source);
+
+                        // Update UI
+                        transmissionElement.textContent = `${transmission.protocol} ${transmission.code}`;
+                        console.log(`Display updated: ${transmission.protocol} ${transmission.code}`);
+
+                        // Load and play
+                        video.load();
+                        if (connectionEstablished) {
+                            video.play().catch(err => {
+                                console.error('Play failed:', err);
+                            });
+                        }
+                    });
+                } else {
+                    console.log('No events available to trigger');
+                }
+            }
         }, true); // Use capture phase to ensure it fires first
 
-        console.log('Keyboard listener active');
+        console.log('Keyboard listeners active (N = skip regular, M = events)');
     </script>
 </body>
 </html>
