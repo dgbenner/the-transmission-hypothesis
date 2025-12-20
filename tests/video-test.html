@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Video URL Test</title>
+    <style>
+        body { background: #000; color: #0f0; font-family: monospace; padding: 20px; }
+        video { width: 100%; max-width: 800px; margin: 20px 0; }
+        .status { padding: 10px; margin: 10px 0; border: 1px solid #0f0; }
+    </style>
+</head>
+<body>
+    <h1>Archive.org Video Test</h1>
+
+    <div class="status" id="status">Loading...</div>
+
+    <video id="testVideo" controls crossorigin="anonymous">
+        <source src="https://dn710105.ca.archive.org/0/items/The-Cure-Songs-of-a-Lost-World-live-at-Troxy-2024/THE%20CURE%20%EF%BC%9A%EF%BC%9A%20SONGS%20OF%20A%20LOST%20WORLD%20%EF%BC%9A%EF%BC%9A%20FULL%20LIVE%20STREAM.mp4" type="video/mp4">
+    </video>
+
+    <script>
+        const video = document.getElementById('testVideo');
+        const status = document.getElementById('status');
+
+        video.addEventListener('loadeddata', () => {
+            status.textContent = '✓ Video loaded successfully!';
+            status.style.borderColor = '#0f0';
+        });
+
+        video.addEventListener('error', (e) => {
+            status.textContent = '✗ Error: ' + (video.error ? video.error.message : 'Unknown error');
+            status.style.borderColor = '#f00';
+            console.error('Video error:', video.error);
+        });
+    </script>
+</body>
+</html>
