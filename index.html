@@ -387,6 +387,14 @@
             position: relative;
             z-index: 15;
             flex-shrink: 0;
+            transition: all 0.3s ease;
+        }
+
+        /* In-progress state (event currently playing) */
+        .event-preview-banner.in-progress {
+            background-color: #808080;
+            border-bottom-color: #666666;
+            padding: 0.4rem 1rem;
         }
 
         .event-preview-banner .countdown-line {
@@ -394,17 +402,33 @@
             font-weight: 700;
             letter-spacing: 0.15em;
             margin-bottom: 0.35rem;
+            transition: all 0.3s ease;
+        }
+
+        /* Smaller text when in-progress */
+        .event-preview-banner.in-progress .countdown-line {
+            font-size: 0.5rem;
+            margin-bottom: 0;
         }
 
         .event-preview-banner .timezone-line {
             font-size: 0.7rem;
             letter-spacing: 0.12em;
             opacity: 0.85;
+            transition: all 0.3s ease;
+        }
+
+        /* Hide timezone line when in-progress */
+        .event-preview-banner.in-progress .timezone-line {
+            display: none;
         }
 
         @media (max-width: 768px) {
             .event-preview-banner .countdown-line {
                 font-size: 0.85rem;
+            }
+            .event-preview-banner.in-progress .countdown-line {
+                font-size: 0.45rem;
             }
             .event-preview-banner .timezone-line {
                 font-size: 0.6rem;
@@ -414,6 +438,9 @@
         @media (max-width: 480px) {
             .event-preview-banner .countdown-line {
                 font-size: 0.75rem;
+            }
+            .event-preview-banner.in-progress .countdown-line {
+                font-size: 0.4rem;
             }
             .event-preview-banner .timezone-line {
                 font-size: 0.55rem;
@@ -708,6 +735,7 @@
         }
 
         // Event preview banner logic
+        const eventBanner = document.getElementById('eventPreviewBanner');
         const countdownLine = document.getElementById('countdownLine');
         const timezoneLine = document.getElementById('timezoneLine');
 
@@ -782,30 +810,41 @@
 
         // Update event preview banner
         function updateEventPreview() {
-            const nextSlot = getNextEventSlot();
-            const now = new Date();
+            // Check if an event is currently active
+            if (isEventActive && currentEvent) {
+                // IN-PROGRESS MODE: Event is currently playing
+                eventBanner.classList.add('in-progress');
+                countdownLine.textContent = `DESIGNATED TRANSMISSION: ${currentEvent.title}`;
+                // Timezone line will be hidden by CSS
+            } else {
+                // PREVIEW MODE: Show upcoming event
+                eventBanner.classList.remove('in-progress');
 
-            // Calculate time until next event
-            const targetDate = new Date(now);
-            targetDate.setUTCHours(nextSlot.slot.hour, 0, 0, 0);
+                const nextSlot = getNextEventSlot();
+                const now = new Date();
 
-            // If target is in the past today, it's tomorrow
-            if (targetDate <= now) {
-                targetDate.setUTCDate(targetDate.getUTCDate() + 1);
+                // Calculate time until next event
+                const targetDate = new Date(now);
+                targetDate.setUTCHours(nextSlot.slot.hour, 0, 0, 0);
+
+                // If target is in the past today, it's tomorrow
+                if (targetDate <= now) {
+                    targetDate.setUTCDate(targetDate.getUTCDate() + 1);
+                }
+
+                const timeUntilEvent = targetDate - now;
+
+                // Get the event that will play in this slot
+                const upcomingEvent = selectEventForSlot(nextSlot.slotIndex);
+                const eventTitle = upcomingEvent ? upcomingEvent.title : 'SCHEDULED PROGRAMMING';
+
+                // Update countdown line
+                const countdown = formatCountdown(timeUntilEvent);
+                countdownLine.textContent = `NEXT DESIGNATED TRANSMISSION: ${eventTitle}  |  BEGINS IN ${countdown}`;
+
+                // Update timezone line
+                timezoneLine.textContent = formatTimezones(nextSlot.slot.hour);
             }
-
-            const timeUntilEvent = targetDate - now;
-
-            // Get the event that will play in this slot
-            const upcomingEvent = selectEventForSlot(nextSlot.slotIndex);
-            const eventTitle = upcomingEvent ? upcomingEvent.title : 'SCHEDULED PROGRAMMING';
-
-            // Update countdown line
-            const countdown = formatCountdown(timeUntilEvent);
-            countdownLine.textContent = `NEXT DESIGNATED TRANSMISSION: ${eventTitle}  |  BEGINS IN ${countdown}`;
-
-            // Update timezone line
-            timezoneLine.textContent = formatTimezones(nextSlot.slot.hour);
         }
 
         // Update banner every second
