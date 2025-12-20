@@ -556,6 +556,21 @@
             return shuffled;
         }
 
+        // Load scheduled events from data/events.json
+        let scheduledEvents = [];
+
+        fetch('data/events.json')
+            .then(response => response.json())
+            .then(events => {
+                scheduledEvents = events;
+                console.log('Loaded scheduled events:', scheduledEvents.length);
+                console.log('Events:', scheduledEvents);
+            })
+            .catch(error => {
+                console.log('No scheduled events file found or error loading:', error);
+                scheduledEvents = [];
+            });
+
         // Load external links and combine with local files
         let transmissions = [];
 
