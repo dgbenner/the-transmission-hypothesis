@@ -376,12 +376,66 @@
         .glitch-flicker {
             animation: flicker 0.1s infinite;
         }
+
+        /* Amber preview banner for upcoming events */
+        .event-preview-banner {
+            background-color: #FFBF00;
+            color: #000000;
+            text-align: center;
+            padding: 0.75rem 1rem;
+            border-bottom: 2px solid #CC9900;
+            position: relative;
+            z-index: 15;
+            flex-shrink: 0;
+        }
+
+        .event-preview-banner .countdown-line {
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            margin-bottom: 0.35rem;
+        }
+
+        .event-preview-banner .timezone-line {
+            font-size: 0.7rem;
+            letter-spacing: 0.12em;
+            opacity: 0.85;
+        }
+
+        @media (max-width: 768px) {
+            .event-preview-banner .countdown-line {
+                font-size: 0.85rem;
+            }
+            .event-preview-banner .timezone-line {
+                font-size: 0.6rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .event-preview-banner .countdown-line {
+                font-size: 0.75rem;
+            }
+            .event-preview-banner .timezone-line {
+                font-size: 0.55rem;
+                letter-spacing: 0.08em;
+            }
+        }
     </style>
 </head>
 <body>
     <!-- Connection overlay -->
     <div id="connectionOverlay">
         <div id="connectionMessage">CLICK TO RECEIVE SIGNAL</div>
+    </div>
+
+    <!-- Event preview banner -->
+    <div class="event-preview-banner" id="eventPreviewBanner">
+        <div class="countdown-line" id="countdownLine">
+            NEXT DESIGNATED TRANSMISSION: CALCULATING...
+        </div>
+        <div class="timezone-line" id="timezoneLine">
+            --:-- GMT  |  --:-- EST  |  --:-- PST  |  --:-- GST  |  --:-- JST  |  --:-- AEDT
+        </div>
     </div>
 
     <div class="header">
@@ -652,6 +706,113 @@
             console.log('✓ REGULAR ROTATION MODE');
             return false;
         }
+
+        // Event preview banner logic
+        const countdownLine = document.getElementById('countdownLine');
+        const timezoneLine = document.getElementById('timezoneLine');
+
+        // Find next upcoming event slot
+        function getNextEventSlot() {
+            const now = new Date();
+            const gmtHour = now.getUTCHours();
+            const gmtMinutes = now.getUTCMinutes();
+
+            // Find the next event slot
+            for (let i = 0; i < EVENT_SLOTS.length; i++) {
+                const slot = EVENT_SLOTS[i];
+                if (slot.hour > gmtHour || (slot.hour === gmtHour && gmtMinutes === 0)) {
+                    return { slotIndex: i, slot: slot };
+                }
+            }
+
+            // If we're past all slots today, next event is tomorrow's first slot
+            return { slotIndex: 0, slot: EVENT_SLOTS[0] };
+        }
+
+        // Format countdown timer
+        function formatCountdown(milliseconds) {
+            const totalMinutes = Math.floor(milliseconds / 60000);
+            const hours = Math.floor(totalMinutes / 60);
+            const minutes = totalMinutes % 60;
+
+            if (hours > 0) {
+                return `${hours}H ${minutes}M`;
+            } else {
+                return `${minutes}M`;
+            }
+        }
+
+        // Convert GMT hour to other timezones
+        function formatTimezones(gmtHour) {
+            const now = new Date();
+            const baseDate = new Date(now);
+            baseDate.setUTCHours(gmtHour, 0, 0, 0);
+
+            // If the event is tomorrow (we're past all today's slots), add a day
+            const currentSlot = getNextEventSlot();
+            if (currentSlot.slotIndex === 0 && gmtHour === 0 && now.getUTCHours() > 16) {
+                baseDate.setUTCDate(baseDate.getUTCDate() + 1);
+            }
+
+            // Format each timezone
+            const gmtTime = `${String(gmtHour).padStart(2, '0')}:00 GMT`;
+
+            // EST (UTC-5)
+            const estDate = new Date(baseDate.getTime() - 5 * 60 * 60 * 1000);
+            const estTime = `${String(estDate.getUTCHours()).padStart(2, '0')}:00 EST`;
+
+            // PST (UTC-8)
+            const pstDate = new Date(baseDate.getTime() - 8 * 60 * 60 * 1000);
+            const pstTime = `${String(pstDate.getUTCHours()).padStart(2, '0')}:00 PST`;
+
+            // GST (UTC+4)
+            const gstDate = new Date(baseDate.getTime() + 4 * 60 * 60 * 1000);
+            const gstTime = `${String(gstDate.getUTCHours()).padStart(2, '0')}:00 GST`;
+
+            // JST (UTC+9)
+            const jstDate = new Date(baseDate.getTime() + 9 * 60 * 60 * 1000);
+            const jstTime = `${String(jstDate.getUTCHours()).padStart(2, '0')}:00 JST`;
+
+            // AEDT (UTC+11)
+            const aedtDate = new Date(baseDate.getTime() + 11 * 60 * 60 * 1000);
+            const aedtTime = `${String(aedtDate.getUTCHours()).padStart(2, '0')}:00 AEDT`;
+
+            return `${gmtTime}  |  ${estTime}  |  ${pstTime}  |  ${gstTime}  |  ${jstTime}  |  ${aedtTime}`;
+        }
+
+        // Update event preview banner
+        function updateEventPreview() {
+            const nextSlot = getNextEventSlot();
+            const now = new Date();
+
+            // Calculate time until next event
+            const targetDate = new Date(now);
+            targetDate.setUTCHours(nextSlot.slot.hour, 0, 0, 0);
+
+            // If target is in the past today, it's tomorrow
+            if (targetDate <= now) {
+                targetDate.setUTCDate(targetDate.getUTCDate() + 1);
+            }
+
+            const timeUntilEvent = targetDate - now;
+
+            // Get the event that will play in this slot
+            const upcomingEvent = selectEventForSlot(nextSlot.slotIndex);
+            const eventTitle = upcomingEvent ? upcomingEvent.title : 'SCHEDULED PROGRAMMING';
+
+            // Update countdown line
+            const countdown = formatCountdown(timeUntilEvent);
+            countdownLine.textContent = `NEXT DESIGNATED TRANSMISSION: ${eventTitle}  |  BEGINS IN ${countdown}`;
+
+            // Update timezone line
+            timezoneLine.textContent = formatTimezones(nextSlot.slot.hour);
+        }
+
+        // Update banner every second
+        setInterval(updateEventPreview, 1000);
+
+        // Initial update when events are loaded
+        setTimeout(updateEventPreview, 500);
 
         // Load external links and combine with local files
         let transmissions = [];
