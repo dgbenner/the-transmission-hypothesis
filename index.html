@@ -1637,7 +1637,8 @@
                 showGlitchTransition(() => {
                     currentIndex = (currentIndex + 1) % transmissions.length;
                     console.log('Current index after:', currentIndex);
-                    loadTransmission(currentIndex);
+                    // Pass skipEventCheck=true to force regular rotation even during event window
+                    loadTransmission(currentIndex, true);
                 });
             }
 
