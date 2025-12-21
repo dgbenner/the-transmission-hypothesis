@@ -44,7 +44,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-image: url('https://github.com/dgbenner/the-transmission-hypothesis/assets/9598611/d7de2b6c-d7b6-45ee-a71f-f9f1d0a6e7c0');
+            background-image: url('img/pngtree-d-illustration-of-a-theater-stage-with-black-velvet-curtains-and-picture-image_5805667.png');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -920,7 +920,7 @@
 
                 // Update countdown line with smaller prefix text
                 const countdown = formatCountdown(timeUntilEvent);
-                countdownLine.innerHTML = `<span class="prefix">NEXT DESIGNATED TRANSMISSION:</span> ${eventTitle}  |  <span class="prefix">BEGINS IN</span> ${countdown}`;
+                countdownLine.innerHTML = `<span class="prefix">NEXT DESIGNATED TRANSMISSION</span> ${eventTitle}  |  <span class="prefix">BEGINS IN</span> <span class="prefix">${countdown}</span>`;
 
                 // Update timezone line
                 timezoneLine.textContent = formatTimezones(nextSlot.slot.hour);
