@@ -786,6 +786,76 @@
         // Check if we should load an event instead of regular rotation
         let currentEvent = null;
         let isEventActive = false;
+        let currentEventStartTime = null;
+        let broadcastMonitorInterval = null;
+
+        /**
+         * Calculate current playback position for synchronized broadcast
+         * @param {Date} eventStartTime - When event began (GMT)
+         * @param {number} videoDuration - Total video length in seconds
+         * @returns {number|null} - Seconds to seek to, or null if event over
+         */
+        function calculateBroadcastPosition(eventStartTime, videoDuration) {
+            const now = new Date();
+            const elapsedSeconds = (now - eventStartTime) / 1000;
+
+            console.log('=== BROADCAST SYNC CALCULATION ===');
+            console.log('Event start time:', eventStartTime.toUTCString());
+            console.log('Current time:', now.toUTCString());
+            console.log('Elapsed seconds:', elapsedSeconds.toFixed(1));
+            console.log('Video duration:', videoDuration.toFixed(1));
+
+            // Event hasn't started yet
+            if (elapsedSeconds < 0) {
+                console.log('Event has not started yet');
+                return 0; // Wait at beginning
+            }
+
+            // Event has ended
+            if (elapsedSeconds >= videoDuration) {
+                console.log('Event has already ended');
+                return null; // Exit event mode
+            }
+
+            // Event in progress
+            console.log('Event in progress - seek to:', elapsedSeconds.toFixed(1));
+            return elapsedSeconds;
+        }
+
+        /**
+         * Monitor broadcast and exit when event ends
+         */
+        function monitorBroadcastEnd(eventStartTime, videoDuration) {
+            // Clear any existing monitor
+            if (broadcastMonitorInterval) {
+                clearInterval(broadcastMonitorInterval);
+            }
+
+            broadcastMonitorInterval = setInterval(() => {
+                const video = document.querySelector('#videoPlayer');
+                if (!video) return;
+
+                const position = calculateBroadcastPosition(eventStartTime, videoDuration);
+
+                if (position === null) {
+                    // Broadcast has ended
+                    console.log('=== BROADCAST ENDED ===');
+                    clearInterval(broadcastMonitorInterval);
+                    broadcastMonitorInterval = null;
+
+                    // Exit event mode and return to regular rotation
+                    isEventActive = false;
+                    currentEvent = null;
+                    currentEventStartTime = null;
+
+                    // Show glitch transition and load next transmission
+                    showGlitchTransition(() => {
+                        currentIndex = (currentIndex + 1) % transmissions.length;
+                        loadTransmission(currentIndex);
+                    });
+                }
+            }, 10000); // Check every 10 seconds
+        }
 
         function checkForEvent() {
             const eventSlot = getCurrentEventSlot();
@@ -795,13 +865,21 @@
                 if (event) {
                     currentEvent = event;
                     isEventActive = true;
-                    console.log('✓ EVENT MODE ACTIVE');
+
+                    // Set event start time to current hour at :00:00
+                    if (!currentEventStartTime) {
+                        currentEventStartTime = new Date();
+                        currentEventStartTime.setUTCMinutes(0, 0, 0);
+                        console.log('✓ EVENT MODE ACTIVE - Start time:', currentEventStartTime.toUTCString());
+                    }
+
                     return true;
                 }
             }
 
             isEventActive = false;
             currentEvent = null;
+            currentEventStartTime = null;
             console.log('✓ REGULAR ROTATION MODE');
             return false;
         }
@@ -1363,17 +1441,78 @@
                 console.log('Calling video.load()...');
                 video.load();
 
-                // Only autoplay if connection has been established
-                if (connectionEstablished) {
-                    console.log('Connection established, calling video.play()...');
-                    video.play().then(() => {
-                        console.log('✓ Video playing successfully');
-                    }).catch(err => {
-                        console.error('✗ Play failed:', err);
-                        console.error('Error details:', err.message, err.name);
-                    });
+                // Handle synchronized broadcast for events
+                if (isEvent && currentEventStartTime) {
+                    console.log('=== SYNCHRONIZED BROADCAST MODE ===');
+
+                    // Wait for metadata to get video duration
+                    const metadataHandler = () => {
+                        const position = calculateBroadcastPosition(currentEventStartTime, video.duration);
+
+                        if (position === null) {
+                            // Event already over, exit to regular rotation
+                            console.log('Event already ended, exiting to regular rotation');
+                            isEventActive = false;
+                            currentEvent = null;
+                            currentEventStartTime = null;
+
+                            showGlitchTransition(() => {
+                                currentIndex = (currentIndex + 1) % transmissions.length;
+                                loadTransmission(currentIndex);
+                            });
+                            return;
+                        }
+
+                        // Seek to current broadcast position
+                        console.log('Seeking to broadcast position:', position.toFixed(1), 'seconds');
+                        video.currentTime = position;
+
+                        // Start playback if connection established
+                        if (connectionEstablished) {
+                            video.play().then(() => {
+                                console.log('✓ Synchronized broadcast playing');
+                            }).catch(err => {
+                                console.error('✗ Play failed:', err);
+                            });
+                        }
+
+                        // Start monitoring for event end
+                        monitorBroadcastEnd(currentEventStartTime, video.duration);
+
+                        // Remove this listener
+                        video.removeEventListener('loadedmetadata', metadataHandler);
+                    };
+
+                    video.addEventListener('loadedmetadata', metadataHandler);
+
+                    // Timeout fallback in case metadata fails
+                    setTimeout(() => {
+                        if (video.duration === 0 || isNaN(video.duration)) {
+                            console.error('Video metadata failed to load, exiting event mode');
+                            video.removeEventListener('loadedmetadata', metadataHandler);
+                            isEventActive = false;
+                            currentEvent = null;
+                            currentEventStartTime = null;
+
+                            showGlitchTransition(() => {
+                                currentIndex = (currentIndex + 1) % transmissions.length;
+                                loadTransmission(currentIndex);
+                            });
+                        }
+                    }, 10000); // 10 second timeout
                 } else {
-                    console.log('⚠ Connection not established yet, video will not autoplay');
+                    // Regular playback (non-event or non-Cloudflare)
+                    if (connectionEstablished) {
+                        console.log('Connection established, calling video.play()...');
+                        video.play().then(() => {
+                            console.log('✓ Video playing successfully');
+                        }).catch(err => {
+                            console.error('✗ Play failed:', err);
+                            console.error('Error details:', err.message, err.name);
+                        });
+                    } else {
+                        console.log('⚠ Connection not established yet, video will not autoplay');
+                    }
                 }
 
                 console.log('✓ Video element loaded and ready');
@@ -1407,6 +1546,13 @@
                     console.log('Event finished, returning to regular rotation');
                     isEventActive = false;
                     currentEvent = null;
+                    currentEventStartTime = null;
+
+                    // Clean up broadcast monitor
+                    if (broadcastMonitorInterval) {
+                        clearInterval(broadcastMonitorInterval);
+                        broadcastMonitorInterval = null;
+                    }
                 }
 
                 // After glitch, load next transmission (will check for events again)
@@ -1478,6 +1624,13 @@
                     console.log('Exiting event mode, returning to regular rotation');
                     isEventActive = false;
                     currentEvent = null;
+                    currentEventStartTime = null;
+
+                    // Clean up broadcast monitor
+                    if (broadcastMonitorInterval) {
+                        clearInterval(broadcastMonitorInterval);
+                        broadcastMonitorInterval = null;
+                    }
                 }
 
                 // Show glitch transition before switching
@@ -1507,6 +1660,10 @@
                     // Set event mode and trigger event load
                     currentEvent = event;
                     isEventActive = true;
+
+                    // Set event start time to NOW for manual triggers
+                    currentEventStartTime = new Date();
+                    console.log('Manual event start time:', currentEventStartTime.toUTCString());
 
                     // Use showGlitchTransition and loadTransmission for proper handling
                     showGlitchTransition(() => {
