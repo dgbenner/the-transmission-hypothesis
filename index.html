@@ -118,7 +118,7 @@
             overflow: hidden;
         }
 
-        video {
+        video, iframe {
             max-width: 100%;
             max-height: 100%;
             min-width: 600px;
@@ -132,16 +132,22 @@
             box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
         }
 
+        iframe {
+            width: 100%;
+            height: 100%;
+            min-height: 500px;
+        }
+
         /* Hide border for very small videos (audio players) */
         @media (max-width: 768px) {
-            video {
+            video, iframe {
                 min-width: 100%;
                 min-height: 300px;
             }
         }
 
         @media (max-width: 480px) {
-            video {
+            video, iframe {
                 min-width: 100%;
                 min-height: 200px;
             }
@@ -537,29 +543,20 @@
             'TAU-6', 'UPSILON-9', 'CHI-1', 'ETA-5', 'IOTA-3'
         ];
 
-        // Video files in /media/video/ - UPDATE THIS LIST when adding new files
+        // Local video files in /media/video/ - these play during REGULAR ROTATION
         const videoFiles = [
             '1mposter on X Checking all the boxes httpst.co0mv8afA4tv X.mp4',
             'A Miracle 1973 Soviet Union Anatoly Petr.mp4',
             'AlexandrIa color engineering.mp4',
-            'angel dogs.mp4',
-            'anti drug public service message .mp4',
             'Art on Tezos on X Special Project Spotlight Dear Guests madebyoo.mp4',
             'Brian on X Flashback - MaxDrekker httpst.cotL9kc8hpoG X.mp4',
             'Broadcast and The Focus Group Investigate Wit.mp4',
-            'cafe flesh pruto foridideio 1982 United Stat.mp4',
             'Cigarette Nostalgia on X This news report on 1980s Valley Girl s.mp4',
-            'defragged.mp4',
-            'dont Buy on X exit.mp4',
-            'dont Buy on X.mp4',
             'Eduard on X This is real httpst.coKv9kpk1ZIA X.mp4',
             'El ojo del huracán In the Eye of the Hurrican.mp4',
             'End of Broadcast Test Pattern  ABRN 6 Lis.mp4',
-            'ertdfgcvb 𓅰 𓅬 𓅭 𓅮 𓅯 on X Unminted Quine from the SVG series.mp4',
-            'ex_mortal_ on X ɪ ᴍ ᴀ ɢ ᴇ httpst.coDvbSThFYSq X.mp4',
-            'german teletext adult mix.mp4',
             'Interesting As Fuck on X This is how they imagined the world wou.mp4',
-            'join us.mp4',
+            'Jim Morrison of The Doors.mp4',
             'K.E.A on X LEnfer Henri-Georges Clouzot Seconds John Frankenheim.mp4',
             'Kat the Poet Engineer poetengineer__ X(1).mp4',
             'Kat the Poet Engineer poetengineer__ X(2).mp4',
@@ -567,78 +564,107 @@
             'Kat the Poet Engineer poetengineer__ X(5).mp4',
             'Kat the Poet Engineer poetengineer__ X.mp4',
             'Kenny Omega vs. Haruka 2011 Japan Stardom.mp4',
-            'les conflit de etoile.mp4',
             'Lets Visit The World Of The Future 1973 Unite.mp4',
-            'life is flashing before your eyes.mp4',
             'Liquid Sky 1982 United States Slava Tsukerman.mp4',
             'Massimo on X Plasma inside the ST40 fusion reactor filmed in col.mp4',
             'Massimo on X Soprano mastery Monica Schwartz hitting high notes.mp4',
+            'Max Headroom Signal Hijacking 1987.mp4',
             'MechFrog on X If we all have more children they can be put to wo.mp4',
-            'monkey doddle les elton.mp4',
-            'nagels classic.mp4',
+            'Misfits Studio on X gn all and many thanks to everyone supportin.mp4',
             'Natived on X httpst.coGPTsQniKLX X(1).mp4',
             'Natived on X httpst.coGPTsQniKLX X.mp4',
-            'nightbreed.mp4',
-            'nike max jean luc godard.mp4',
-            'oz Film Manufacturing Company Logo 1914 Unite.mp4',
-            'perfectloop on X 𝚛𝚎𝚌𝚝𝚎𝚍 httpst.cofoiRFu16ah X.mp4',
             'Phase IV 1974 US-UK Saul Bass sound on httpst.mp4',
             'Professor Balthazar - Starlight Serenaders 19.mp4',
-            'psychotronica on X End of Day Sign-Off 1990 American Exxxtasy so.mp4',
-            'psychotronica on X Shoplifters The Criminal Hordes 1983 United S.mp4',
+            'Reptile Hybrid on X rocknrollofall httpst.coNU6HUNXygG X.mp4',
             'SanDiegoHumor on X This is how my co-workers think I work remote.mp4',
             'School of the Holy Beast 1974 Suspiria 1977 s.mp4',
-            'sine on X Storm Cell fellowshiptrust.mp4',
-            'skin tight.mp4',
-            'slam dance.mp4',
+            'Science girl on X This chimpanzee completes a visual memory test.mp4',
             'Slava3ngl on X GM️ My new GIF project live on dropdotart Wire-sc.mp4',
-            'sound check on mirror .mp4',
-            'station duspute 1979.mp4',
-            'Strano on X dreaming in colors httpst.copdoIjiO8Rb X(1).mp4',
-            'Strano on X dreaming in colors httpst.copdoIjiO8Rb X.mp4',
             'Strano on X Quote with an artwork that is always on your mind. h(1).mp4',
             'Strano on X Quote with an artwork that is always on your mind. h(2).mp4',
             'Strano on X Quote with an artwork that is always on your mind. h(3).mp4',
             'Strano on X Quote with an artwork that is always on your mind. h.mp4',
-            'test pattern the police.mp4',
-            'the day after.m4v',
+            'Strano on X dreaming in colors httpst.copdoIjiO8Rb X(1).mp4',
+            'Strano on X dreaming in colors httpst.copdoIjiO8Rb X.mp4',
             'The Death of Muffinhead.mp4',
             'The Door with Dr. Jack Kevorkian.mp4',
             'The Holy Mountain 1973 Mexico Alejandro Jodor(1).mp4',
             'The Holy Mountain 1973 Mexico Alejandro Jodor.mp4',
-            'the vampira show los anglesl.mp4',
-            'the wizard of gore.mp4',
-            'this is a test.mp4',
-            'throbbing gristle discipline kazar pavillion.mp4',
             'VD Hotline.mp4',
             'War Is Menstrual Envy 1992 United States Nick.mp4',
+            'William S. Burroughs talks about Writing and Art.mp4',
+            'angel dogs.mp4',
+            'anti drug public service message .mp4',
+            'cafe flesh pruto foridideio 1982 United Stat.mp4',
             'carnival of souls 1962).mp4',
             'cattledesert.mp4',
             'charlesmasonwhoishe.mp4',
             'czechinthenavy.mp4',
+            'defragged.mp4',
+            'dont Buy on X exit.mp4',
+            'dont Buy on X.mp4',
+            'ertdfgcvb 𓅰 𓅬 𓅭 𓅮 𓅯 on X Unminted Quine from the SVG series.mp4',
+            'ex_mortal_ on X ɪ ᴍ ᴀ ɢ ᴇ httpst.coDvbSThFYSq X.mp4',
+            'german teletext adult mix.mp4',
+            'join us.mp4',
             'kandinsky.mp4',
-            'Max Headroom Signal Hijacking 1987.mp4',
+            'les conflit de etoile.mp4',
+            'life is flashing before your eyes.mp4',
             'metalpolymer conductor.mp4',
-            'Misfits Studio on X gn all and many thanks to everyone supportin.mp4',
+            'monkey doddle les elton.mp4',
+            'nagels classic.mp4',
+            'nightbreed.mp4',
+            'nike max jean luc godard.mp4',
+            'oz Film Manufacturing Company Logo 1914 Unite.mp4',
+            'perfectloop on X 𝚛𝚎𝚌𝚝𝚎𝚍 httpst.cofoiRFu16ah X.mp4',
+            'psychotronica on X End of Day Sign-Off 1990 American Exxxtasy so.mp4',
+            'psychotronica on X Shoplifters The Criminal Hordes 1983 United S.mp4',
             'rainbow-obsidian.mp4',
             'rothkovapor.mp4',
             'simpsontravelfuture.mp4',
+            'sine on X Storm Cell fellowshiptrust.mp4',
+            'skin tight.mp4',
+            'slam dance.mp4',
             'smokingart.mp4',
+            'sound check on mirror .mp4',
+            'station duspute 1979.mp4',
             'stranger things sphere.mp4',
+            'test pattern the police.mp4',
+            'the day after.m4v',
+            'the vampira show los anglesl.mp4',
+            'the wizard of gore.mp4',
+            'this is a test.mp4',
+            'throbbing gristle discipline kazar pavillion.mp4',
             'wheeless truck walking vehicle prototype m.mp4',
-            'William S. Burroughs talks about Writing and Art.mp4',
             'winnebagoman.mp4',
             'woodstock.mp4',
-            'おかず OKAZZ on X httpst.cogWWooeMguX X.mp4'
+            'おかず OKAZZ on X httpst.cogWWooeMguX X.mp4',
+            'Dudes Posting Their Ws on X This guy on IG makes stop-motion ani.mp4',
+            'Waleed on X historyinmemes Sketch of the Maginot Line from aroun.mp4'
         ];
 
-        // KLING-generated video files in /media/video-kling/ - UPDATE THIS LIST when adding new KLING videos
+        // KLING AI video files in /media/video-kling/ - these play during REGULAR ROTATION
         const klingVideoFiles = [
             'KL 2001 kubrick.mp4',
             'KL barrylyndon.mp4',
             'KL big wheel.mp4',
             'KL hallway.mp4',
             'KL shining floor.mp4',
+            'ai_gen1.mp4',
+            'ai_gen2.mp4',
+            'ai_gen3.mp4',
+            'ai_gen4.mp4',
+            'ai_gen5.mp4',
+            'ai_gen6.mp4',
+            'ai_gen7.mp4',
+            'ai_gen8.mp4',
+            'ai_gen9.mp4',
+            'ai_gen10.mp4',
+            'ai_gen11.mp4',
+            'ai_gen12.mp4',
+            'ai_gen13.mp4',
+            'ai_gen14.mp4',
+            'ai_gen15.mp4',
             'kl space station runway.mp4',
             'klMonet valley cruese.mp4',
             'kling_20251218_Image_to_Video_Animate_th_3308_0.mp4',
@@ -792,6 +818,14 @@
             }
         }
 
+        // Helper function to format time with lowercase a/p for am/pm
+        function formatTime12Hour(hour24) {
+            if (hour24 === 0) return '12:00a';
+            if (hour24 < 12) return `${hour24}:00a`;
+            if (hour24 === 12) return '12:00p';
+            return `${hour24 - 12}:00p`;
+        }
+
         // Convert GMT hour to other timezones
         function formatTimezones(gmtHour) {
             const now = new Date();
@@ -804,28 +838,28 @@
                 baseDate.setUTCDate(baseDate.getUTCDate() + 1);
             }
 
-            // Format each timezone
-            const gmtTime = `${String(gmtHour).padStart(2, '0')}:00 GMT`;
+            // Format each timezone with 12-hour format and lowercase a/p
+            const gmtTime = `${formatTime12Hour(gmtHour)} GMT`;
 
             // EST (UTC-5)
             const estDate = new Date(baseDate.getTime() - 5 * 60 * 60 * 1000);
-            const estTime = `${String(estDate.getUTCHours()).padStart(2, '0')}:00 EST`;
+            const estTime = `${formatTime12Hour(estDate.getUTCHours())} EST`;
 
             // PST (UTC-8)
             const pstDate = new Date(baseDate.getTime() - 8 * 60 * 60 * 1000);
-            const pstTime = `${String(pstDate.getUTCHours()).padStart(2, '0')}:00 PST`;
+            const pstTime = `${formatTime12Hour(pstDate.getUTCHours())} PST`;
 
             // GST (UTC+4)
             const gstDate = new Date(baseDate.getTime() + 4 * 60 * 60 * 1000);
-            const gstTime = `${String(gstDate.getUTCHours()).padStart(2, '0')}:00 GST`;
+            const gstTime = `${formatTime12Hour(gstDate.getUTCHours())} GST`;
 
             // JST (UTC+9)
             const jstDate = new Date(baseDate.getTime() + 9 * 60 * 60 * 1000);
-            const jstTime = `${String(jstDate.getUTCHours()).padStart(2, '0')}:00 JST`;
+            const jstTime = `${formatTime12Hour(jstDate.getUTCHours())} JST`;
 
             // AEDT (UTC+11)
             const aedtDate = new Date(baseDate.getTime() + 11 * 60 * 60 * 1000);
-            const aedtTime = `${String(aedtDate.getUTCHours()).padStart(2, '0')}:00 AEDT`;
+            const aedtTime = `${formatTime12Hour(aedtDate.getUTCHours())} AEDT`;
 
             return `${gmtTime}  |  ${estTime}  |  ${pstTime}  |  ${gstTime}  |  ${jstTime}  |  ${aedtTime}`;
         }
@@ -875,126 +909,61 @@
         // Initial update when events are loaded
         setTimeout(updateEventPreview, 500);
 
-        // Load external links and combine with local files
+        // Generate transmissions for REGULAR ROTATION (local files ONLY)
+        // Scheduled events from events.json are handled separately
         let transmissions = [];
 
-        fetch('media/links.json')
-            .then(response => response.json())
-            .then(externalLinks => {
-                console.log('Loaded external links:', externalLinks.length);
+        // Generate transmissions from local video files
+        const localTransmissions = videoFiles.map((filename, index) => {
+            // Create title from filename
+            const title = filename
+                .replace(/\.(mp4|m4v)$/i, '')
+                .split(/[\s\-_]+/)
+                .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+                .join(' ');
 
-                // Generate transmissions from local video files
-                const localTransmissions = videoFiles.map((filename, index) => {
-                    // Create title from filename
-                    const title = filename
-                        .replace(/\.(mp4|m4v)$/i, '')
-                        .split(/[\s\-_]+/)
-                        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-                        .join(' ');
+            const code = generateCode(filename);
 
-                    const code = generateCode(filename);
+            return {
+                title: title,
+                url: `media/video/${filename}`,
+                protocol: protocols[index % protocols.length],
+                code: code,
+                source: 'local'
+            };
+        });
 
-                    return {
-                        title: title,
-                        url: `media/video/${filename}`,
-                        protocol: protocols[index % protocols.length],
-                        code: code,
-                        source: 'local'
-                    };
-                });
+        // Generate transmissions from KLING video files
+        const klingTransmissions = klingVideoFiles.map((filename, index) => {
+            // Create title from filename
+            const title = filename
+                .replace(/\.(mp4|m4v)$/i, '')
+                .split(/[\s\-_]+/)
+                .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+                .join(' ');
 
-                // Generate transmissions from KLING video files
-                const klingTransmissions = klingVideoFiles.map((filename, index) => {
-                    // Create title from filename
-                    const title = filename
-                        .replace(/\.(mp4|m4v)$/i, '')
-                        .split(/[\s\-_]+/)
-                        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-                        .join(' ');
+            const code = generateCode(filename);
 
-                    const code = generateCode(filename);
+            return {
+                title: title,
+                url: `media/video-kling/${filename}`,
+                protocol: protocols[(videoFiles.length + index) % protocols.length],
+                code: code,
+                source: 'kling'
+            };
+        });
 
-                    return {
-                        title: title,
-                        url: `media/video-kling/${filename}`,
-                        protocol: protocols[(videoFiles.length + index) % protocols.length],
-                        code: code,
-                        source: 'kling'
-                    };
-                });
+        // Combine and shuffle for regular rotation
+        const allTransmissions = [...localTransmissions, ...klingTransmissions];
+        transmissions = shuffleArray(allTransmissions);
 
-                // Generate transmissions from external links
-                const externalTransmissions = externalLinks.map((link, index) => {
-                    const code = generateCode(link.title);
-
-                    return {
-                        title: link.title,
-                        url: link.url,
-                        protocol: protocols[(videoFiles.length + klingVideoFiles.length + index) % protocols.length],
-                        code: code,
-                        source: 'external'
-                    };
-                });
-
-                // Combine and shuffle all transmissions
-                const allTransmissions = [...localTransmissions, ...klingTransmissions, ...externalTransmissions];
-                transmissions = shuffleArray(allTransmissions);
-
-                console.log('Total transmissions:', transmissions.length);
-                console.log(`Local: ${localTransmissions.length}, KLING: ${klingTransmissions.length}, External: ${externalTransmissions.length}`);
-                console.log('Transmissions (randomized):', transmissions);
-
-                // Don't load transmission until user connects
-                console.log('Transmissions ready, waiting for user connection...');
-            })
-            .catch(error => {
-                console.error('Error loading external links, using local only:', error);
-
-                // Fallback to local + KLING only if links.json fails to load
-                const localTransmissions = videoFiles.map((filename, index) => {
-                    const title = filename
-                        .replace(/\.(mp4|m4v)$/i, '')
-                        .split(/[\s\-_]+/)
-                        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-                        .join(' ');
-
-                    const code = generateCode(filename);
-
-                    return {
-                        title: title,
-                        url: `media/video/${filename}`,
-                        protocol: protocols[index % protocols.length],
-                        code: code,
-                        source: 'local'
-                    };
-                });
-
-                const klingTransmissions = klingVideoFiles.map((filename, index) => {
-                    const title = filename
-                        .replace(/\.(mp4|m4v)$/i, '')
-                        .split(/[\s\-_]+/)
-                        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-                        .join(' ');
-
-                    const code = generateCode(filename);
-
-                    return {
-                        title: title,
-                        url: `media/video-kling/${filename}`,
-                        protocol: protocols[(videoFiles.length + index) % protocols.length],
-                        code: code,
-                        source: 'kling'
-                    };
-                });
-
-                const allTransmissions = [...localTransmissions, ...klingTransmissions];
-                transmissions = shuffleArray(allTransmissions);
-
-                console.log('Total transmissions (local + KLING):', transmissions.length);
-
-                // Don't load transmission until user connects
-                console.log('Transmissions ready, waiting for user connection...');
-            });
+        console.log('=== REGULAR ROTATION INITIALIZED ===');
+        console.log('Total transmissions:', transmissions.length);
+        console.log(`Local: ${localTransmissions.length}, KLING: ${klingTransmissions.length}`);
+        console.log('Transmissions (randomized):', transmissions);
+        console.log('Transmissions ready, waiting for user connection...');
+        console.log('');
+        console.log('NOTE: Scheduled events from events.json play at 00:00, 08:00, 16:00 GMT');
 
         let currentIndex = 0;
         const video = document.getElementById('videoPlayer');
@@ -1216,9 +1185,29 @@
         }
 
         // Load transmission
-        function loadTransmission(index) {
-            // Check if we should load an event instead
-            checkForEvent();
+        // Helper function to extract Archive.org item ID from URL
+        function getArchiveItemId(url) {
+            // Match patterns like:
+            // https://archive.org/download/ITEM-ID/...
+            // https://dn710105.ca.archive.org/0/items/ITEM-ID/...
+            const downloadMatch = url.match(/archive\.org\/download\/([^\/]+)/);
+            const itemsMatch = url.match(/archive\.org\/\d+\/items\/([^\/]+)/);
+
+            if (downloadMatch) return downloadMatch[1];
+            if (itemsMatch) return itemsMatch[1];
+            return null;
+        }
+
+        // Helper function to check if URL is Archive.org
+        function isArchiveUrl(url) {
+            return url.includes('archive.org');
+        }
+
+        function loadTransmission(index, skipEventCheck = false) {
+            // Check if we should load an event instead (unless manually triggered)
+            if (!skipEventCheck) {
+                checkForEvent();
+            }
 
             let transmission;
             let isEvent = false;
@@ -1242,42 +1231,133 @@
                 console.log(`Loading transmission ${index + 1}/${transmissions.length}:`, transmission);
             }
 
-            // Clear existing source
-            video.pause();
-            video.removeAttribute('src');
-            while (video.firstChild) {
-                video.removeChild(video.firstChild);
+            const videoContainer = document.querySelector('.video-container');
+
+            // Check if URL is Archive.org
+            if (isArchiveUrl(transmission.url)) {
+                console.log('Archive.org URL detected - using iframe embed');
+
+                const itemId = getArchiveItemId(transmission.url);
+                if (itemId) {
+                    console.log('Item ID:', itemId);
+                    const embedUrl = `https://archive.org/embed/${itemId}`;
+                    console.log('Embed URL:', embedUrl);
+
+                    // Remove existing video element
+                    const existingVideo = videoContainer.querySelector('#videoPlayer');
+                    if (existingVideo) {
+                        existingVideo.remove();
+                    }
+
+                    // Remove existing iframe if any
+                    const existingIframe = videoContainer.querySelector('iframe');
+                    if (existingIframe) {
+                        existingIframe.remove();
+                    }
+
+                    // Create new iframe
+                    const iframe = document.createElement('iframe');
+                    iframe.id = 'archiveEmbed';
+                    iframe.src = embedUrl;
+                    iframe.frameborder = '0';
+                    iframe.allowfullscreen = true;
+                    iframe.allow = 'fullscreen';
+
+                    // Insert iframe after glitch overlay
+                    const glitchOverlay = videoContainer.querySelector('#glitchOverlay');
+                    if (glitchOverlay) {
+                        glitchOverlay.insertAdjacentElement('afterend', iframe);
+                    } else {
+                        videoContainer.appendChild(iframe);
+                    }
+
+                    console.log('✓ Archive.org iframe loaded');
+                } else {
+                    console.error('Could not extract item ID from Archive.org URL');
+                }
+            } else {
+                // Detect if this is a Cloudflare R2 URL or local file
+                const isCloudflare = transmission.url.includes('r2.dev') || transmission.url.includes('cloudflare');
+                if (isCloudflare) {
+                    console.log('Cloudflare R2 URL detected - using video tag with CORS');
+                } else {
+                    console.log('Local file detected - using video tag');
+                }
+                console.log('Video URL:', transmission.url);
+
+                // Remove existing iframe if any
+                const existingIframe = videoContainer.querySelector('iframe');
+                if (existingIframe) {
+                    existingIframe.remove();
+                }
+
+                // Create video element if it doesn't exist
+                let videoElement = videoContainer.querySelector('#videoPlayer');
+                if (!videoElement) {
+                    videoElement = document.createElement('video');
+                    videoElement.id = 'videoPlayer';
+                    videoElement.preload = 'auto';
+                    videoElement.playsinline = true;
+                    videoElement.crossOrigin = 'anonymous';
+                    videoElement.textContent = 'Your terminal does not support video transmission.';
+
+                    const glitchOverlay = videoContainer.querySelector('#glitchOverlay');
+                    if (glitchOverlay) {
+                        glitchOverlay.insertAdjacentElement('afterend', videoElement);
+                    } else {
+                        videoContainer.appendChild(videoElement);
+                    }
+
+                    // Re-assign video variable
+                    video = videoElement;
+                }
+
+                // Clear existing source
+                video.pause();
+                video.removeAttribute('src');
+                while (video.firstChild) {
+                    video.removeChild(video.firstChild);
+                }
+
+                // Add new source
+                const source = document.createElement('source');
+                source.src = transmission.url;
+                console.log('Setting video source to:', source.src);
+
+                // Detect file type
+                if (transmission.url.endsWith('.mp3')) {
+                    source.type = 'audio/mpeg';
+                } else if (transmission.url.endsWith('.mp4')) {
+                    source.type = 'video/mp4';
+                } else if (transmission.url.endsWith('.m4v')) {
+                    source.type = 'video/mp4';
+                }
+
+                video.appendChild(source);
+
+                // Load video
+                console.log('Calling video.load()...');
+                video.load();
+
+                // Only autoplay if connection has been established
+                if (connectionEstablished) {
+                    console.log('Connection established, calling video.play()...');
+                    video.play().then(() => {
+                        console.log('✓ Video playing successfully');
+                    }).catch(err => {
+                        console.error('✗ Play failed:', err);
+                        console.error('Error details:', err.message, err.name);
+                    });
+                } else {
+                    console.log('⚠ Connection not established yet, video will not autoplay');
+                }
+
+                console.log('✓ Video element loaded and ready');
             }
-
-            // Add new source
-            const source = document.createElement('source');
-            source.src = transmission.url;
-
-            // Detect file type
-            if (transmission.url.endsWith('.mp3')) {
-                source.type = 'audio/mpeg';
-            } else if (transmission.url.endsWith('.mp4')) {
-                source.type = 'video/mp4';
-            } else if (transmission.url.endsWith('.m4v')) {
-                source.type = 'video/mp4';
-            }
-
-            video.appendChild(source);
 
             // Update UI - combine protocol and code
             transmissionElement.textContent = `${transmission.protocol} ${transmission.code}`;
-
             console.log(`Display updated: ${transmission.protocol} ${transmission.code}`);
-
-            // Load video
-            video.load();
-
-            // Only autoplay if connection has been established
-            if (connectionEstablished) {
-                video.play().catch(err => {
-                    console.error('Play failed:', err);
-                });
-            }
         }
 
         // Format time remaining
@@ -1400,52 +1480,15 @@
                         console.log(`Manual event trigger - playing: ${event.title}`);
                     }
 
-                    // Set event mode and load the event
+                    // Set event mode and trigger event load
                     currentEvent = event;
                     isEventActive = true;
 
+                    // Use showGlitchTransition and loadTransmission for proper handling
                     showGlitchTransition(() => {
-                        // Create event transmission object
-                        const transmission = {
-                            title: event.title,
-                            url: event.url,
-                            protocol: 'EVENT',
-                            code: event.category ? event.category.toUpperCase() : 'SPECIAL',
-                            source: 'event'
-                        };
-
-                        // Clear existing source
-                        video.pause();
-                        video.removeAttribute('src');
-                        while (video.firstChild) {
-                            video.removeChild(video.firstChild);
-                        }
-
-                        // Add new source
-                        const source = document.createElement('source');
-                        source.src = transmission.url;
-
-                        if (transmission.url.endsWith('.mp3')) {
-                            source.type = 'audio/mpeg';
-                        } else if (transmission.url.endsWith('.mp4')) {
-                            source.type = 'video/mp4';
-                        } else if (transmission.url.endsWith('.m4v')) {
-                            source.type = 'video/mp4';
-                        }
-
-                        video.appendChild(source);
-
-                        // Update UI
-                        transmissionElement.textContent = `${transmission.protocol} ${transmission.code}`;
-                        console.log(`Display updated: ${transmission.protocol} ${transmission.code}`);
-
-                        // Load and play
-                        video.load();
-                        if (connectionEstablished) {
-                            video.play().catch(err => {
-                                console.error('Play failed:', err);
-                            });
-                        }
+                        // loadTransmission will detect isEventActive and load currentEvent
+                        // Pass skipEventCheck=true to prevent checkForEvent() from clearing our manual event
+                        loadTransmission(currentIndex, true);
                     });
                 } else {
                     console.log('No events available to trigger');
