@@ -1,0 +1,16 @@
+# Node modules
+node_modules/
+
+# Cloudflare Wrangler
+.wrangler/
+.dev.vars
+
+# OS files
+.DS_Store
+
+# Staging folders (don't commit)
+media/new-regular/
+media/new-events/
+
+# Keep .gitkeep files
+!**/.gitkeep
