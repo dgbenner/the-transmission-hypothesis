@@ -497,6 +497,7 @@
         .banner-content.slide-in-right {
             transform: translateX(100%);
             opacity: 0;
+            transition: none; /* Disable transition when positioning off-screen */
         }
 
         .banner-content.active {
@@ -1161,15 +1162,18 @@
                 // Update content immediately (while off-screen)
                 updateEventPreview(true);
 
-                // Prepare to slide in from right
+                // Position element off-screen to the right (no transition)
                 bannerContent.classList.remove('slide-out-left');
                 bannerContent.classList.add('slide-in-right');
 
-                // Trigger slide in animation
-                setTimeout(() => {
+                // Force reflow to ensure the position change happens before transition
+                bannerContent.offsetHeight;
+
+                // Trigger slide in animation from right
+                requestAnimationFrame(() => {
                     bannerContent.classList.remove('slide-in-right');
                     bannerContent.classList.add('active');
-                }, 50);
+                });
             }, 400); // Match CSS transition duration
         }
 
