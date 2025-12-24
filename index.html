@@ -504,23 +504,20 @@
             opacity: 1;
         }
 
-        /* FUTURE > navigation button */
+        /* FUTURE > navigation button - inline with timezones */
         .future-nav {
-            position: absolute;
-            right: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
             background-color: transparent;
             color: #000000;
             border: none;
-            font-size: 0.7rem;
+            font-size: 0.49rem;
             font-weight: 700;
-            letter-spacing: 0.15em;
+            letter-spacing: 0;
             text-decoration: underline;
             cursor: pointer;
-            padding: 0.25rem 0.5rem;
+            padding: 0;
+            margin-left: 0.5rem;
             transition: all 0.2s ease;
-            z-index: 10;
+            vertical-align: baseline;
         }
 
         .future-nav:hover {
@@ -535,15 +532,13 @@
 
         @media (max-width: 768px) {
             .future-nav {
-                font-size: 0.6rem;
-                right: 0.5rem;
+                font-size: 0.42rem;
             }
         }
 
         @media (max-width: 480px) {
             .future-nav {
-                font-size: 0.55rem;
-                right: 0.3rem;
+                font-size: 0.385rem;
             }
         }
     </style>
@@ -556,14 +551,13 @@
 
     <!-- Event preview banner -->
     <div class="event-preview-banner" id="eventPreviewBanner">
-        <button class="future-nav" id="futureNav">FUTURE &gt;</button>
         <div class="banner-content-wrapper">
             <div class="banner-content active" id="bannerContent">
                 <div class="countdown-line" id="countdownLine">
                     NEXT DESIGNATED TRANSMISSION: CALCULATING...
                 </div>
                 <div class="timezone-line" id="timezoneLine">
-                    --:-- GMT  |  --:-- EST  |  --:-- PST  |  --:-- GST  |  --:-- JST  |  --:-- AEDT
+                    --:-- GMT  |  --:-- EST  |  --:-- PST  |  --:-- GST  |  --:-- JST  |  --:-- AEDT<button class="future-nav" id="futureNav">FUTURE &#9654;</button>
                 </div>
             </div>
         </div>
@@ -1140,8 +1134,15 @@
                 const countdown = formatCountdown(timeUntilEvent);
                 countdownLine.innerHTML = `<span class="prefix">NEXT DESIGNATED TRANSMISSION</span> ${eventTitle}  |  <span class="prefix">BEGINS IN</span> <span class="prefix">${countdown}</span>`;
 
-                // Update timezone line
-                timezoneLine.textContent = formatTimezones(currentSlot.slot.hour);
+                // Update timezone line with FUTURE button included
+                timezoneLine.innerHTML = `${formatTimezones(currentSlot.slot.hour)}<button class="future-nav" id="futureNav">FUTURE &#9654;</button>`;
+
+                // Re-attach event listener to the new button
+                const futureNav = document.getElementById('futureNav');
+                futureNav.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    nextCarouselEvent();
+                });
             }
         }
 
@@ -1171,13 +1172,6 @@
                 }, 50);
             }, 400); // Match CSS transition duration
         }
-
-        // Add click handler to FUTURE button
-        const futureNav = document.getElementById('futureNav');
-        futureNav.addEventListener('click', (e) => {
-            e.preventDefault();
-            nextCarouselEvent();
-        });
 
         // Update banner every second
         setInterval(updateEventPreview, 1000);
