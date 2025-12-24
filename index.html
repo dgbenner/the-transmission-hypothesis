@@ -291,7 +291,11 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: opacity 0.8s ease-out;
+            transition: opacity 0.8s ease-out, background-color 0.3s ease;
+        }
+
+        #connectionOverlay:hover {
+            background-color: #0a0a0a;
         }
 
         #connectionOverlay.fade-out {
