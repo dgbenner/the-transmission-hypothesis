@@ -477,6 +477,75 @@
                 letter-spacing: 0.08em;
             }
         }
+
+        /* Carousel content wrapper for slide animations */
+        .banner-content-wrapper {
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .banner-content {
+            transition: transform 0.4s ease, opacity 0.4s ease;
+        }
+
+        .banner-content.slide-out-left {
+            transform: translateX(-100%);
+            opacity: 0;
+        }
+
+        .banner-content.slide-in-right {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+
+        .banner-content.active {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        /* FUTURE > navigation button */
+        .future-nav {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: transparent;
+            color: #000000;
+            border: none;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            text-decoration: underline;
+            cursor: pointer;
+            padding: 0.25rem 0.5rem;
+            transition: all 0.2s ease;
+            z-index: 10;
+        }
+
+        .future-nav:hover {
+            color: #333333;
+            text-decoration: underline;
+        }
+
+        /* Hide FUTURE button when in-progress */
+        .event-preview-banner.in-progress .future-nav {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .future-nav {
+                font-size: 0.6rem;
+                right: 0.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .future-nav {
+                font-size: 0.55rem;
+                right: 0.3rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -487,11 +556,16 @@
 
     <!-- Event preview banner -->
     <div class="event-preview-banner" id="eventPreviewBanner">
-        <div class="countdown-line" id="countdownLine">
-            NEXT DESIGNATED TRANSMISSION: CALCULATING...
-        </div>
-        <div class="timezone-line" id="timezoneLine">
-            --:-- GMT  |  --:-- EST  |  --:-- PST  |  --:-- GST  |  --:-- JST  |  --:-- AEDT
+        <button class="future-nav" id="futureNav">FUTURE &gt;</button>
+        <div class="banner-content-wrapper">
+            <div class="banner-content active" id="bannerContent">
+                <div class="countdown-line" id="countdownLine">
+                    NEXT DESIGNATED TRANSMISSION: CALCULATING...
+                </div>
+                <div class="timezone-line" id="timezoneLine">
+                    --:-- GMT  |  --:-- EST  |  --:-- PST  |  --:-- GST  |  --:-- JST  |  --:-- AEDT
+                </div>
+            </div>
         </div>
     </div>
 
@@ -988,8 +1062,56 @@
             return `${gmtTime}  |  ${estTime}  |  ${pstTime}  |  ${gstTime}  |  ${jstTime}  |  ${aedtTime}`;
         }
 
-        // Update event preview banner
-        function updateEventPreview() {
+        // Carousel state for cycling through upcoming events
+        let carouselIndex = 0; // 0 = next event, 1 = event after that, 2 = third event
+        let upcomingEventSlots = []; // Will store the next 3 event slots
+
+        // Calculate the next 3 upcoming event slots
+        function calculateUpcomingSlots() {
+            const now = new Date();
+            const gmtHour = now.getUTCHours();
+            const gmtMinutes = now.getUTCMinutes();
+            const slots = [];
+
+            // Start from current time
+            let checkDate = new Date(now);
+            let slotsFound = 0;
+
+            // Find next 3 event slots
+            while (slotsFound < 3) {
+                const checkHour = checkDate.getUTCHours();
+                const checkMinutes = checkDate.getUTCMinutes();
+
+                // Check each EVENT_SLOT to find the next one
+                for (let i = 0; i < EVENT_SLOTS.length; i++) {
+                    const slot = EVENT_SLOTS[i];
+                    const slotDate = new Date(checkDate);
+                    slotDate.setUTCHours(slot.hour, 0, 0, 0);
+
+                    // Only include future slots
+                    if (slotDate > now) {
+                        slots.push({
+                            slotIndex: i,
+                            slot: slot,
+                            date: new Date(slotDate)
+                        });
+                        slotsFound++;
+                        if (slotsFound === 3) break;
+                    }
+                }
+
+                // Move to next day if we haven't found 3 slots yet
+                if (slotsFound < 3) {
+                    checkDate.setUTCDate(checkDate.getUTCDate() + 1);
+                    checkDate.setUTCHours(0, 0, 0, 0);
+                }
+            }
+
+            return slots;
+        }
+
+        // Update event preview banner (with carousel support)
+        function updateEventPreview(skipAnimation = false) {
             // Check if an event is currently active
             if (isEventActive && currentEvent) {
                 // IN-PROGRESS MODE: Event is currently playing
@@ -1000,22 +1122,18 @@
                 // PREVIEW MODE: Show upcoming event
                 eventBanner.classList.remove('in-progress');
 
-                const nextSlot = getNextEventSlot();
+                // Recalculate upcoming slots every update (in case we crossed into a new time slot)
+                upcomingEventSlots = calculateUpcomingSlots();
+
+                // Get the current carousel slot (0-2)
+                const currentSlot = upcomingEventSlots[carouselIndex];
                 const now = new Date();
 
-                // Calculate time until next event
-                const targetDate = new Date(now);
-                targetDate.setUTCHours(nextSlot.slot.hour, 0, 0, 0);
-
-                // If target is in the past today, it's tomorrow
-                if (targetDate <= now) {
-                    targetDate.setUTCDate(targetDate.getUTCDate() + 1);
-                }
-
-                const timeUntilEvent = targetDate - now;
+                // Calculate time until this event
+                const timeUntilEvent = currentSlot.date - now;
 
                 // Get the event that will play in this slot
-                const upcomingEvent = selectEventForSlot(nextSlot.slotIndex);
+                const upcomingEvent = selectEventForSlot(currentSlot.slotIndex);
                 const eventTitle = upcomingEvent ? upcomingEvent.title : 'SCHEDULED PROGRAMMING';
 
                 // Update countdown line with smaller prefix text
@@ -1023,9 +1141,43 @@
                 countdownLine.innerHTML = `<span class="prefix">NEXT DESIGNATED TRANSMISSION</span> ${eventTitle}  |  <span class="prefix">BEGINS IN</span> <span class="prefix">${countdown}</span>`;
 
                 // Update timezone line
-                timezoneLine.textContent = formatTimezones(nextSlot.slot.hour);
+                timezoneLine.textContent = formatTimezones(currentSlot.slot.hour);
             }
         }
+
+        // Carousel navigation - cycle through next 3 events
+        function nextCarouselEvent() {
+            const bannerContent = document.getElementById('bannerContent');
+
+            // Slide current content out to the left
+            bannerContent.classList.remove('active');
+            bannerContent.classList.add('slide-out-left');
+
+            setTimeout(() => {
+                // Increment carousel index (loop back to 0 after 2)
+                carouselIndex = (carouselIndex + 1) % 3;
+
+                // Update content immediately (while off-screen)
+                updateEventPreview(true);
+
+                // Prepare to slide in from right
+                bannerContent.classList.remove('slide-out-left');
+                bannerContent.classList.add('slide-in-right');
+
+                // Trigger slide in animation
+                setTimeout(() => {
+                    bannerContent.classList.remove('slide-in-right');
+                    bannerContent.classList.add('active');
+                }, 50);
+            }, 400); // Match CSS transition duration
+        }
+
+        // Add click handler to FUTURE button
+        const futureNav = document.getElementById('futureNav');
+        futureNav.addEventListener('click', (e) => {
+            e.preventDefault();
+            nextCarouselEvent();
+        });
 
         // Update banner every second
         setInterval(updateEventPreview, 1000);
