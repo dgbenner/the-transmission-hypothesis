@@ -109,6 +109,77 @@
             gap: 2rem;
         }
 
+        /* Theater Seating Mini-Map Styles */
+        .theater-seating {
+            position: absolute;
+            top: 50%;
+            right: 1rem;
+            transform: translateY(-50%);
+            display: none; /* Hidden by default, shown during events */
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            background: rgba(20, 20, 20, 0.4);
+            border-radius: 3px;
+        }
+
+        .theater-seating.active {
+            display: flex;
+        }
+
+        .seating-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .seat-row {
+            display: flex;
+            gap: 4px;
+            justify-content: center;
+        }
+
+        .seat {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: rgba(128, 128, 128, 0.3);
+            border: 1px solid rgba(128, 128, 128, 0.2);
+            transition: all 0.4s ease;
+        }
+
+        /* Your seat - bright CRT green */
+        .seat.user {
+            background: #00FF00;
+            border-color: #00FF00;
+            box-shadow: 0 0 8px rgba(0, 255, 0, 0.8);
+        }
+
+        /* Other viewers - amber/yellow */
+        .seat.occupied {
+            background: #FFBF00;
+            border-color: #FFBF00;
+            box-shadow: 0 0 6px rgba(255, 191, 0, 0.6);
+            opacity: 0.85;
+        }
+
+        .seating-label {
+            font-size: 0.625rem;
+            letter-spacing: 0.15em;
+            color: #00FF00;
+            font-family: 'Courier New', monospace;
+            text-align: center;
+        }
+
+        /* Hide on mobile/small screens */
+        @media (max-width: 649px) {
+            .theater-seating {
+                display: none !important;
+            }
+        }
+
         .video-container {
             flex: 1;
             display: flex;
@@ -585,6 +656,44 @@
         <div class="now-playing">TX: <span id="transmission">THETA-7 DND-87-D</span></div>
         <div class="meta">
             <span id="timer">--</span>
+        </div>
+
+        <!-- Theater Seating Mini-Map (visible only during events on larger screens) -->
+        <div id="theaterSeating" class="theater-seating">
+            <div class="seating-grid">
+                <!-- Row 1: 5 seats -->
+                <div class="seat-row row-1">
+                    <div class="seat" data-row="0" data-seat="0"></div>
+                    <div class="seat" data-row="0" data-seat="1"></div>
+                    <div class="seat" data-row="0" data-seat="2"></div>
+                    <div class="seat" data-row="0" data-seat="3"></div>
+                    <div class="seat" data-row="0" data-seat="4"></div>
+                </div>
+                <!-- Row 2: 7 seats -->
+                <div class="seat-row row-2">
+                    <div class="seat" data-row="1" data-seat="0"></div>
+                    <div class="seat" data-row="1" data-seat="1"></div>
+                    <div class="seat" data-row="1" data-seat="2"></div>
+                    <div class="seat" data-row="1" data-seat="3"></div>
+                    <div class="seat" data-row="1" data-seat="4"></div>
+                    <div class="seat" data-row="1" data-seat="5"></div>
+                    <div class="seat" data-row="1" data-seat="6"></div>
+                </div>
+                <!-- Row 3: 8 seats -->
+                <div class="seat-row row-3">
+                    <div class="seat" data-row="2" data-seat="0"></div>
+                    <div class="seat" data-row="2" data-seat="1"></div>
+                    <div class="seat" data-row="2" data-seat="2"></div>
+                    <div class="seat" data-row="2" data-seat="3"></div>
+                    <div class="seat" data-row="2" data-seat="4"></div>
+                    <div class="seat" data-row="2" data-seat="5"></div>
+                    <div class="seat" data-row="2" data-seat="6"></div>
+                    <div class="seat" data-row="2" data-seat="7"></div>
+                </div>
+            </div>
+            <div class="seating-label">
+                <span id="seatCount">1/20 SEATS</span>
+            </div>
         </div>
     </div>
 
@@ -1865,6 +1974,347 @@
         }, true); // Use capture phase to ensure it fires first
 
         console.log('Keyboard listeners active (N = skip regular, M = events)');
+
+        // ====================================================================
+        // THEATER SEATING MINI-MAP SYSTEM
+        // Shows simulated viewer occupancy during scheduled events
+        // ====================================================================
+
+        const TheaterSeating = {
+            // Configuration
+            SEAT_LAYOUT: [5, 7, 8], // Row 1: 5 seats, Row 2: 7 seats, Row 3: 8 seats
+            TOTAL_SEATS: 20,
+
+            // Occupancy probabilities (cumulative for easier calculation)
+            OCCUPANCY_PROBS: [
+                { viewers: 0, probability: 0.71 },  // 71% chance: just you
+                { viewers: 1, probability: 0.91 },  // 20% chance: 1 other (71 + 20 = 91)
+                { viewers: 2, probability: 0.977 }, // 6.7% chance: 2 others (91 + 6.7 = 97.7)
+                { viewers: 3, probability: 1.0 }    // 1.7% chance: 3 others (97.7 + 1.7 = 100)
+            ],
+
+            // State
+            userSeat: null,
+            occupiedSeats: [],
+            updateInterval: null,
+            currentOccupancy: 0,
+
+            // Initialize the seating system
+            init() {
+                console.log('🎭 Theater Seating: Initializing...');
+                // updateOccupancy now handles assigning ALL seats (user + others) with spacing
+                this.updateOccupancy();
+                this.startOccupancyUpdates();
+            },
+
+            // Clean up when event ends
+            cleanup() {
+                console.log('🎭 Theater Seating: Cleaning up...');
+                if (this.updateInterval) {
+                    clearInterval(this.updateInterval);
+                    this.updateInterval = null;
+                }
+                this.clearAllSeats();
+                this.userSeat = null;
+                this.occupiedSeats = [];
+            },
+
+            // Get all seat coordinates
+            getAllSeatCoordinates() {
+                const seats = [];
+                this.SEAT_LAYOUT.forEach((seatsInRow, rowIndex) => {
+                    for (let seatIndex = 0; seatIndex < seatsInRow; seatIndex++) {
+                        seats.push({ row: rowIndex, seat: seatIndex });
+                    }
+                });
+                return seats;
+            },
+
+            // Get seat element by row and seat index
+            getSeatElement(row, seat) {
+                return document.querySelector(`.seat[data-row="${row}"][data-seat="${seat}"]`);
+            },
+
+            // Calculate number of other viewers based on probability distribution
+            getRandomOccupancy() {
+                const rand = Math.random();
+                for (let i = 0; i < this.OCCUPANCY_PROBS.length; i++) {
+                    if (rand < this.OCCUPANCY_PROBS[i].probability) {
+                        return this.OCCUPANCY_PROBS[i].viewers;
+                    }
+                }
+                return 0; // Default fallback
+            },
+
+            // Check if a seat meets spacing requirements (min 2-3 seats distance)
+            // allOccupiedSeats should include ALL viewers (user + others)
+            isSeatValid(row, seat, allOccupiedSeats) {
+                const MIN_DISTANCE = 2; // Minimum seat buffer distance
+
+                // Check against all occupied seats (user + other viewers)
+                for (let occupied of allOccupiedSeats) {
+                    const rowDiff = Math.abs(occupied.row - row);
+                    const seatDiff = Math.abs(occupied.seat - seat);
+
+                    // No adjacent seats (horizontal, vertical, or diagonal)
+                    // Must maintain minimum distance in all directions
+                    if (rowDiff <= 1 && seatDiff <= MIN_DISTANCE) {
+                        return false;
+                    }
+                }
+
+                return true;
+            },
+
+            // Update occupancy with new random viewers
+            updateOccupancy() {
+                // Clear ALL seats first (including user seat)
+                this.clearAllSeats();
+
+                // Calculate total number of viewers (including user)
+                const numOtherViewers = this.getRandomOccupancy();
+                const totalViewers = 1 + numOtherViewers; // User + others
+
+                console.log(`🎭 Theater Seating: Total viewers = ${totalViewers} (you + ${numOtherViewers} others)`);
+
+                // Get all available seats
+                const allSeats = this.getAllSeatCoordinates();
+
+                // Assign ALL seats randomly with spacing rules
+                const allOccupiedSeats = [];
+                let attempts = 0;
+                const MAX_ATTEMPTS = 500; // Increased for better randomization
+
+                while (allOccupiedSeats.length < totalViewers && attempts < MAX_ATTEMPTS) {
+                    attempts++;
+                    const randomIndex = Math.floor(Math.random() * allSeats.length);
+                    const candidate = allSeats[randomIndex];
+
+                    // Check if seat is already taken
+                    const alreadyTaken = allOccupiedSeats.some(
+                        s => s.row === candidate.row && s.seat === candidate.seat
+                    );
+
+                    if (!alreadyTaken && this.isSeatValid(candidate.row, candidate.seat, allOccupiedSeats)) {
+                        allOccupiedSeats.push(candidate);
+                    }
+                }
+
+                // If we couldn't fit all viewers with spacing, use what we got
+                if (allOccupiedSeats.length < totalViewers) {
+                    console.log(`🎭 Could only fit ${allOccupiedSeats.length} viewers with spacing rules (wanted ${totalViewers})`);
+                }
+
+                // First seat is the user, rest are other viewers
+                if (allOccupiedSeats.length > 0) {
+                    this.userSeat = allOccupiedSeats[0];
+                    console.log(`🎭 Your seat: Row ${this.userSeat.row + 1}, Seat ${this.userSeat.seat + 1}`);
+
+                    // Mark user seat visually
+                    const userSeatElement = this.getSeatElement(this.userSeat.row, this.userSeat.seat);
+                    if (userSeatElement) {
+                        userSeatElement.classList.add('user');
+                    }
+
+                    // Mark other viewers' seats
+                    this.occupiedSeats = allOccupiedSeats.slice(1); // All except first (user)
+                    this.occupiedSeats.forEach(seat => {
+                        const seatElement = this.getSeatElement(seat.row, seat.seat);
+                        if (seatElement) {
+                            seatElement.classList.add('occupied');
+                        }
+                    });
+                }
+
+                // Update seat count label
+                const totalOccupied = allOccupiedSeats.length;
+                this.updateSeatCountLabel(totalOccupied);
+            },
+
+            // Clear occupied seats (keep user seat)
+            clearOccupiedSeats() {
+                this.occupiedSeats.forEach(seat => {
+                    const seatElement = this.getSeatElement(seat.row, seat.seat);
+                    if (seatElement) {
+                        seatElement.classList.remove('occupied');
+                    }
+                });
+                this.occupiedSeats = [];
+            },
+
+            // Clear all seats including user
+            clearAllSeats() {
+                const allSeats = document.querySelectorAll('.seat');
+                allSeats.forEach(seat => {
+                    seat.classList.remove('user', 'occupied');
+                });
+            },
+
+            // Update the seat count label
+            updateSeatCountLabel(count) {
+                const label = document.getElementById('seatCount');
+                if (label) {
+                    label.textContent = `${count}/20 SEATS`;
+                }
+            },
+
+            // Start periodic occupancy updates with random arrivals/departures
+            startOccupancyUpdates() {
+                const scheduleNextEvent = () => {
+                    // Random interval between 20-90 seconds for next arrival/departure
+                    const nextEventTime = 20000 + Math.random() * 70000;
+
+                    this.updateInterval = setTimeout(() => {
+                        // Decide what happens: someone arrives or someone leaves
+                        const currentOthers = this.occupiedSeats.length;
+                        const shouldAddPerson = Math.random() < 0.5; // 50/50 chance
+
+                        if (shouldAddPerson) {
+                            // Try to add a person (if there's room and it makes sense probability-wise)
+                            if (currentOthers < 3) { // Max 3 other viewers
+                                this.addRandomViewer();
+                            }
+                        } else {
+                            // Try to remove a person (if there are any)
+                            if (currentOthers > 0) {
+                                this.removeRandomViewer();
+                            }
+                        }
+
+                        // Schedule next event
+                        scheduleNextEvent();
+                    }, nextEventTime);
+                };
+
+                // Start the event cycle
+                scheduleNextEvent();
+            },
+
+            // Add a new random viewer with spacing rules
+            addRandomViewer() {
+                const allSeats = this.getAllSeatCoordinates();
+
+                // Build list of currently occupied seats (user + others)
+                const currentlyOccupied = [this.userSeat, ...this.occupiedSeats];
+
+                // Try to find a valid seat
+                let attempts = 0;
+                const MAX_ATTEMPTS = 100;
+
+                while (attempts < MAX_ATTEMPTS) {
+                    attempts++;
+                    const randomIndex = Math.floor(Math.random() * allSeats.length);
+                    const candidate = allSeats[randomIndex];
+
+                    // Check if already taken
+                    const alreadyTaken = currentlyOccupied.some(
+                        s => s.row === candidate.row && s.seat === candidate.seat
+                    );
+
+                    if (!alreadyTaken && this.isSeatValid(candidate.row, candidate.seat, currentlyOccupied)) {
+                        // Found a valid seat! Add the viewer
+                        this.occupiedSeats.push(candidate);
+
+                        const seatElement = this.getSeatElement(candidate.row, candidate.seat);
+                        if (seatElement) {
+                            seatElement.classList.add('occupied');
+                        }
+
+                        console.log(`🎭 New viewer arrived: Row ${candidate.row + 1}, Seat ${candidate.seat + 1} (${this.occupiedSeats.length + 1} total)`);
+                        this.updateSeatCountLabel(this.occupiedSeats.length + 1);
+                        return;
+                    }
+                }
+
+                console.log('🎭 Could not find valid seat for new viewer (spacing rules)');
+            },
+
+            // Remove a random viewer
+            removeRandomViewer() {
+                if (this.occupiedSeats.length === 0) return;
+
+                // Pick random viewer to leave
+                const randomIndex = Math.floor(Math.random() * this.occupiedSeats.length);
+                const leavingSeat = this.occupiedSeats[randomIndex];
+
+                // Remove from array
+                this.occupiedSeats.splice(randomIndex, 1);
+
+                // Remove visual indicator
+                const seatElement = this.getSeatElement(leavingSeat.row, leavingSeat.seat);
+                if (seatElement) {
+                    seatElement.classList.remove('occupied');
+                }
+
+                console.log(`🎭 Viewer left: Row ${leavingSeat.row + 1}, Seat ${leavingSeat.seat + 1} (${this.occupiedSeats.length + 1} total)`);
+                this.updateSeatCountLabel(this.occupiedSeats.length + 1);
+            },
+
+            // Show the seating map
+            show() {
+                const seatingElement = document.getElementById('theaterSeating');
+                if (seatingElement && window.innerWidth >= 650) {
+                    seatingElement.classList.add('active');
+                    console.log('🎭 Theater Seating: Map visible');
+                }
+            },
+
+            // Hide the seating map
+            hide() {
+                const seatingElement = document.getElementById('theaterSeating');
+                if (seatingElement) {
+                    seatingElement.classList.remove('active');
+                    console.log('🎭 Theater Seating: Map hidden');
+                }
+            }
+        };
+
+        // ====================================================================
+        // INTEGRATE THEATER SEATING WITH EVENT MODE
+        // ====================================================================
+
+        // Monitor isEventActive flag changes to show/hide theater seating
+        let lastEventActiveState = false;
+
+        setInterval(() => {
+            // Event just started
+            if (!lastEventActiveState && isEventActive) {
+                console.log('🎭 Event started - initializing theater seating');
+                TheaterSeating.init();
+                TheaterSeating.show();
+                lastEventActiveState = true;
+            }
+            // Event just ended
+            else if (lastEventActiveState && !isEventActive) {
+                console.log('🎭 Event ended - hiding theater seating');
+                TheaterSeating.cleanup();
+                TheaterSeating.hide();
+                lastEventActiveState = false;
+            }
+        }, 500); // Check every 500ms
+
+        // Monitor when events end via video ended event
+        video.addEventListener('ended', () => {
+            if (isEventActive) {
+                console.log('🎭 Event ended (video finished) - cleaning up theater seating');
+                TheaterSeating.cleanup();
+                TheaterSeating.hide();
+            }
+        });
+
+        // Handle window resize to show/hide based on screen width
+        window.addEventListener('resize', () => {
+            if (isEventActive) {
+                if (window.innerWidth >= 650) {
+                    TheaterSeating.show();
+                } else {
+                    TheaterSeating.hide();
+                }
+            }
+        });
+
+        console.log('🎭 Theater Seating system loaded and ready');
+
     </script>
 </body>
 </html>
