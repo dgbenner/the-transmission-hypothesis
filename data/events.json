@@ -10,6 +10,11 @@
     "category": "film"
   },
   {
+    "title": "Cries and Whispers (1972)",
+    "url": "https://pub-f753370382ba4047a0a936c14b4b14f8.r2.dev/film/Cries%20and%20Whispers%20(1972)/Cries_and_Whispers_1972_with_subs.mp4",
+    "category": "film"
+  },
+  {
     "title": "The Cure Songs Of A Lost World Live at Troxy (2024)",
     "url": "https://pub-f753370382ba4047a0a936c14b4b14f8.r2.dev/music/The%20Cure%20Songs%20Of%20A%20Lost%20World%20Live%20at%20Troxy%20(2024)/The%20Cure%20Songs%20Of%20A%20Lost%20World%20Live%20at%20Troxy%20(2024).mp4",
     "category": "music"
@@ -111,7 +116,7 @@
   },
   {
     "title": "Tangerine Dream - Coventry Cathedral (1975)",
-    "url": "https://pub-f753370382ba4047a0a936c14b4b14f8.r2.dev/music/Tangerine%20Dream%20-%20Coventry%20Cathedral%20(1975)/Tangerine%20Dream%20-%20Ricochet%20at%20Coventry%20Cathedral%20-%201975.mpg",
+    "url": "https://pub-f753370382ba4047a0a936c14b4b14f8.r2.dev/music/Tangerine%20Dream%20-%20Coventry%20Cathedral%20(1975)/tangerine_dream.mp4",
     "category": "music"
   },
   {
@@ -135,48 +140,68 @@
     "category": "documentary"
   },
   {
+    "title": "21 Up (1977)",
+    "url": "https://pub-f753370382ba4047a0a936c14b4b14f8.r2.dev/film/21%20Up%20(1977)/21_Up_1977.mp4",
+    "category": "film"
+  },
+  {
+    "title": "28 Up (1984)",
+    "url": "https://pub-f753370382ba4047a0a936c14b4b14f8.r2.dev/film/28%20Up%20(1984)/28_Up_1984.mp4",
+    "category": "film"
+  },
+  {
+    "title": "All That Jazz (1979)",
+    "url": "https://pub-f753370382ba4047a0a936c14b4b14f8.r2.dev/film/All%20That%20Jazz%20(1979)/All_That_Jazz_1979.mp4",
+    "category": "film"
+  },
+  {
     "title": "Alphaville (1965)",
-    "url": "https://pub-f753370382ba4047a0a936c14b4b14f8.r2.dev/Alphaville_with_subtitles.mp4",
+    "url": "https://pub-f753370382ba4047a0a936c14b4b14f8.r2.dev/film/Alphaville%20(1965)/Alphaville_with_subtitles.mp4",
+    "category": "film"
+  },
+  {
+    "title": "Barry Lyndon (1975)",
+    "url": "https://pub-f753370382ba4047a0a936c14b4b14f8.r2.dev/film/Barry%20Lyndon%20(1975)/Barry_Lyndon_1975.mp4",
     "category": "film"
   },
   {
     "title": "Bicycle Thieves (1948)",
-    "url": "https://pub-f753370382ba4047a0a936c14b4b14f8.r2.dev/Bicycle_Thieves_1948_with_subtitles.mp4",
+    "url": "https://pub-f753370382ba4047a0a936c14b4b14f8.r2.dev/film/Bicycle%20Thieves%20(1948)/Bicycle_Thieves_1948_with_subtitles.mp4",
     "category": "film"
   },
   {
     "title": "Breathless (1960)",
-    "url": "https://pub-f753370382ba4047a0a936c14b4b14f8.r2.dev/Breathless_1960_with_subtitles.mp4",
+    "url": "https://pub-f753370382ba4047a0a936c14b4b14f8.r2.dev/film/Breathless%20(1960)/Breathless_1960_with_subtitles.mp4",
     "category": "film"
   },
   {
     "title": "Carnival Of Souls (1962)",
-    "url": "https://pub-f753370382ba4047a0a936c14b4b14f8.r2.dev/Carnival_Of_Souls_1962_with_subtitles.mp4",
+    "url": "https://pub-f753370382ba4047a0a936c14b4b14f8.r2.dev/film/Carnival%20Of%20Souls%20(1962)/Carnival_Of_Souls_1962_with_subtitles.mp4",
     "category": "film"
   },
   {
     "title": "Christiane F (1981)",
-    "url": "https://pub-f753370382ba4047a0a936c14b4b14f8.r2.dev/Christiane_F_1981_with_subtitles.mp4",
+    "url": "https://pub-f753370382ba4047a0a936c14b4b14f8.r2.dev/film/Christiane%20F%20(1981)/Christiane_F_1981_with_subtitles.mp4",
     "category": "film"
   },
   {
     "title": "Elevator To The Gallows (1958)",
-    "url": "https://pub-f753370382ba4047a0a936c14b4b14f8.r2.dev/Elevator_To_The_Gallows_1958_with_subtitles.mp4",
+    "url": "https://pub-f753370382ba4047a0a936c14b4b14f8.r2.dev/film/Elevator%20To%20The%20Gallows%20(1958)/Elevator_To_The_Gallows_1958_with_subtitles.mp4",
     "category": "film"
   },
   {
     "title": "Black Moon (1975)",
-    "url": "https://pub-f753370382ba4047a0a936c14b4b14f8.r2.dev/Black_Moon_1975.mp4",
+    "url": "https://pub-f753370382ba4047a0a936c14b4b14f8.r2.dev/film/Black%20Moon%20(1975)/Black_Moon_1975.mp4",
     "category": "film"
   },
   {
     "title": "Equinox (1970)",
-    "url": "https://pub-f753370382ba4047a0a936c14b4b14f8.r2.dev/Equinox_1970.mp4",
+    "url": "https://pub-f753370382ba4047a0a936c14b4b14f8.r2.dev/film/Equinox%20(1970)/Equinox_1970.mp4",
     "category": "film"
   },
   {
     "title": "Brian Eno - Imaginary Landscapes",
-    "url": "https://pub-f753370382ba4047a0a936c14b4b14f8.r2.dev/Brian_Eno_Imaginary_Landscapes.mp4",
+    "url": "https://pub-f753370382ba4047a0a936c14b4b14f8.r2.dev/documentary/Brian%20Eno%20-%20Imaginary%20Landscapes/Brian_Eno_Imaginary_Landscapes.mp4",
     "category": "documentary"
   }
 ]
