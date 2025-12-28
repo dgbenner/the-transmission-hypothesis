@@ -95,11 +95,6 @@
     "category": "film"
   },
   {
-    "title": "The Year Of Living Dangerously (1982)",
-    "url": "https://pub-f753370382ba4047a0a936c14b4b14f8.r2.dev/film/The%20Year%20Of%20Living%20Dangerously%20(1982)/The%20Year%20of%20Living%20Dangerously%20(Peter%20Weir%2C%201982)%20%5BRePoPo%5D.mkv",
-    "category": "film"
-  },
-  {
     "title": "Wings of Desire (1987)",
     "url": "https://pub-f753370382ba4047a0a936c14b4b14f8.r2.dev/film/Wings%20of%20Desire%20(1987)/wings%20of%20desire.mp4",
     "category": "film"
@@ -197,6 +192,11 @@
   {
     "title": "Equinox (1970)",
     "url": "https://pub-f753370382ba4047a0a936c14b4b14f8.r2.dev/film/Equinox%20(1970)/Equinox_1970.mp4",
+    "category": "film"
+  },
+  {
+    "title": "Holocaust 2000 (1977)",
+    "url": "https://pub-f753370382ba4047a0a936c14b4b14f8.r2.dev/film/Holocaust%202000%20(1977)/Holocaust%202000%20(1977).mp4",
     "category": "film"
   },
   {
