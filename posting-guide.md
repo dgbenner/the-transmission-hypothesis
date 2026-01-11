@@ -7,7 +7,7 @@
 
 ## REDDIT SUBREDDITS
 
-### r/InternetIsBeautiful ❌  PULLED AS DOES NOT ALLOW GALLERIES OR VIDEO (View Data: [summary])
+### r/InternetIsBeautiful ❌  PULLED AS DOES NOT ALLOW GALLERIES OR VIDEO (View Data: 15 hits, 30m live post before removal)
 **Why:** Made for unique web experiences exactly like this  
 **Audience:** ~17M members, love discovering hidden internet gems  
 **Best Framing:** Mysterious discovery, no self-promotion tone  
@@ -31,7 +31,7 @@ https://thetransmissionhypothesis.com
 
 ---
 
-### r/ObscureMedia ✅
+### r/ObscureMedia ✅ (View Data: 2.5k hits, 6 hours after post)
 **Why:** Community dedicated to rare/unusual video content  
 **Audience:** ~250K members, archivists and media collectors  
 **Best Framing:** Emphasize the curated film selection and VHS aesthetic  
