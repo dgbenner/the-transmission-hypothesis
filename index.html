@@ -454,10 +454,10 @@
                 0deg,
                 transparent,
                 transparent 2px,
-                rgba(0, 255, 0, 0.1) 2px,
-                rgba(0, 255, 0, 0.1) 4px
+                rgba(0, 255, 0, 0.2) 2px,
+                rgba(0, 255, 0, 0.2) 4px
             );
-            animation: scanlines 0.5s linear infinite;
+            animation: scanlines 1s linear infinite;
         }
 
         .glitch-rgb::after {
@@ -467,9 +467,9 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(255, 0, 0, 0.2);
+            background: rgba(255, 0, 0, 0.4);
             mix-blend-mode: screen;
-            animation: rgb-split 0.3s steps(2) infinite;
+            animation: rgb-split 0.6s steps(2) infinite;
         }
 
         .glitch-static::before {
@@ -479,12 +479,12 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200"><filter id="noise"><feTurbulence baseFrequency="0.9" numOctaves="4"/></filter><rect width="200" height="200" filter="url(%23noise)" opacity="0.4"/></svg>');
-            animation: static-noise 0.2s infinite;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200"><filter id="noise"><feTurbulence baseFrequency="0.9" numOctaves="4"/></filter><rect width="200" height="200" filter="url(%23noise)" opacity="0.8"/></svg>');
+            animation: static-noise 0.4s infinite;
         }
 
         .glitch-flicker {
-            animation: flicker 0.1s infinite;
+            animation: flicker 0.2s infinite;
         }
 
         /* Amber preview banner for upcoming events */
@@ -1463,7 +1463,7 @@
         function playGlitchSound() {
             initAudioContext();
 
-            const duration = 0.3 + Math.random() * 0.3; // 0.3-0.6 seconds
+            const duration = 0.6 + Math.random() * 0.6; // 0.6-1.2 seconds
             const now = audioContext.currentTime;
 
             // Random glitch sound type
@@ -1475,12 +1475,12 @@
                 const buffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
                 const data = buffer.getChannelData(0);
                 for (let i = 0; i < bufferSize; i++) {
-                    data[i] = (Math.random() * 2 - 1) * 0.3; // White noise at 30% volume
+                    data[i] = (Math.random() * 2 - 1) * 0.6; // White noise at 60% volume
                 }
                 const source = audioContext.createBufferSource();
                 source.buffer = buffer;
                 const gainNode = audioContext.createGain();
-                gainNode.gain.setValueAtTime(0.3, now);
+                gainNode.gain.setValueAtTime(0.6, now);
                 gainNode.gain.exponentialRampToValueAtTime(0.01, now + duration);
                 source.connect(gainNode);
                 gainNode.connect(audioContext.destination);
@@ -1493,7 +1493,7 @@
                 oscillator.type = 'sawtooth';
                 oscillator.frequency.setValueAtTime(2000, now);
                 oscillator.frequency.exponentialRampToValueAtTime(500, now + duration);
-                gainNode.gain.setValueAtTime(0.15, now);
+                gainNode.gain.setValueAtTime(0.3, now);
                 gainNode.gain.exponentialRampToValueAtTime(0.01, now + duration);
                 oscillator.connect(gainNode);
                 gainNode.connect(audioContext.destination);
@@ -1508,7 +1508,7 @@
                 oscillator.frequency.setValueAtTime(baseFreq, now);
                 oscillator.frequency.setValueAtTime(baseFreq * 2, now + duration / 3);
                 oscillator.frequency.setValueAtTime(baseFreq * 0.5, now + duration * 2 / 3);
-                gainNode.gain.setValueAtTime(0.2, now);
+                gainNode.gain.setValueAtTime(0.4, now);
                 gainNode.gain.exponentialRampToValueAtTime(0.01, now + duration);
                 oscillator.connect(gainNode);
                 gainNode.connect(audioContext.destination);
@@ -1521,7 +1521,7 @@
         function showGlitchTransition(callback) {
             // Random glitch type
             const glitchClass = glitchTypes[Math.floor(Math.random() * glitchTypes.length)];
-            const duration = 300 + Math.random() * 500; // 0.3-0.8 seconds
+            const duration = 600 + Math.random() * 1000; // 0.6-1.6 seconds
 
             // Add glitch class and activate
             glitchOverlay.className = glitchClass;
